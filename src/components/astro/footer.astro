@@ -1,0 +1,25 @@
+---
+import CurrentUser from "@/components/react/currentuser";
+---
+<div class="grid grid-cols-1">
+	<div class="grid grid-cols-1 mt-5">
+		<CurrentUser client:only="react" />
+	</div>
+
+    <div class="col-span-1 mt-5 text-center">
+		<p>
+			Designed to support both the <a href="https://github.com/bitshares/beet" class="text-gradient">Bitshares Beet</a> & <a href="https://github.com/beetapp/beeteos" class="text-gradient">BeetEOS</a> multiwallets.
+		</p>
+		<p><a href="https://github.com/BTS-CM/astro-nft-tool" class="text-gradient">MIT Licensed code</a> built with <a href="https://astro.build" class="text-gradient">Astro</a>, <a href="https://react.dev" class="text-gradient">React</a> & <a href="https://ui.shadcn.com" class="text-gradient">ShadCN</a>.</p>
+    </div>
+</div>
+
+<style>
+	.text-gradient {
+		background-image: var(--accent-gradient);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-size: 400%;
+		background-position: 0%;
+	}
+</style>

@@ -1,0 +1,72 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import Header from "@/components/astro/header.astro";
+import Footer from "@/components/astro/footer.astro";
+---
+
+<Layout title="Bitshares Astro NFT Tool - About">
+	<main>
+		<Header />
+		<div class="grid grid-cols-1 mt-5">
+			<div class="col-span-1">
+				<Card>
+					<CardHeader>
+						<CardTitle>🧾 About this Bitshares Astro NFT tool</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<p class="leading-6">
+							This tool enables you to create, edit and issue NFTs on the Bitshares blockchain.
+						</p>
+
+						<p class="leading-6 mt-3">
+							Only the owner of an NFT asset (not the holders) can edit or issue said NFT.
+						</p>
+
+						<p class="leading-6 mt-3">
+							Supports IPFS based NFT multimedia like images, videos, audio, documents, 3D models, etc.
+						</p>
+
+						<p class="leading-6 mt-3">
+							The <a href="https://github.com/bitshares/beet" class="text-purple-500">Bitshares BEET</a> & <a href="https://github.com/beetapp/beeteos" class="text-purple-500">BeetEOS</a> wallets are multi blockchain crypto wallets, they're used to securely handle authentication and key management so that 3rd party tools like this one can focus solely on client side developments.
+						</p>
+
+						<p class="leading-6 mt-3">
+							This tool is aimed at being an evergreen modern web application, setting a standard for other <a href="https://github.com/bitshares/beet" class="text-purple-500">Beet</a>/<a href="https://github.com/beetapp/beeteos" class="text-purple-500">BeetEOS</a> based Bitshares dapps. Feel free to fork this application's github repository as a template for your own dapp, or even just to host it on Vercel yourself.
+						</p>
+
+						<p class="leading-6 mt-3">
+							Bitshares blockchain queries are performed within <a href="https://docs.astro.build/en/guides/endpoints/#server-endpoints-api-routes" class="text-purple-500">server side functions</a>, rather than within the client side application code. If this troubles you, download the code and run it yourself for peace of mind.
+						</p>
+
+						<p class="leading-6 mt-3">
+							This tool was developed by the <a href="https://nftea.gallery" class="text-purple-500">NFTEA Gallery</a>, one of the first Bitshares NFT Galleries; to support development consider colecting an <a href="https://nftea.gallery/gallery" class="text-purple-500">NFTEA NFT</a>, or donate to the Bitshares blockchain account "<a href="https://blocksights.info/#/accounts/nft.artist" class="text-purple-500">nft.artist</a>" directly. Thanks :) 
+						</p>
+					</CardContent>
+				</Card>
+			</div>
+		</div>
+		<Footer />
+	</main>
+</Layout>
+
+<style>
+	main {
+		margin: auto;
+		padding: 1rem;
+		width: 900px;
+		max-width: calc(100% - 2rem);
+		color: white;
+		font-size: 20px;
+		line-height: 1.6;
+		min-height: 100%;
+		height: 100%;
+	}
+</style>

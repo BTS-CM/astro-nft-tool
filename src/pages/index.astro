@@ -1,0 +1,116 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import Header from "@/components/astro/header.astro";
+import Footer from "@/components/astro/footer.astro";
+
+import { 
+	RocketIcon, PlusCircledIcon, ScissorsIcon, QuestionMarkCircledIcon
+} from "@radix-ui/react-icons";
+
+---
+
+<Layout title="Bitshares Astro NFT tool - index page">
+	<main>
+		<Header />
+		<div class="grid grid-cols-1 md:grid-cols-2 mt-5">
+			<div class="col-span-1">
+				<a href="/create">
+					<Card className="mt-3 md:mr-2">
+						<CardHeader>
+						  <CardTitle>
+							<span class="flex">
+								<span class="flex-shrink">
+									<PlusCircledIcon className="w-6 h-6 mr-3" />
+								</span>
+								<span class="flex-auto">
+									Create a new NFT
+								</span>
+							</span>
+							</CardTitle>
+						  <CardDescription>Create a new NFT on the Bitshares blockchain</CardDescription>
+						</CardHeader>
+					</Card>
+				</a>
+			</div>
+			<div class="col-span-1">
+				<a href="/edit">
+					<Card className="mt-3 md:ml-2">
+						<CardHeader>
+						  <CardTitle>
+							<span class="flex">
+								<span class="flex-shrink">
+									<ScissorsIcon className="w-6 h-6 mr-3" />
+								</span>
+								<span class="flex-auto">
+									Edit an existing NFT
+								</span>
+							</span>
+							</CardTitle>
+						  <CardDescription>Edit and existing NFT on the Bitshares blockchain</CardDescription>
+						</CardHeader>
+					</Card>
+				</a>
+			</div>
+			<div class="col-span-1">
+				<a href="/issue">
+					<Card className="mt-3 md:mr-2">
+						<CardHeader>
+						  <CardTitle>
+							<span class="flex">
+								<span class="flex-shrink">
+									<RocketIcon className="w-6 h-6 mr-3" />
+								</span>
+								<span class="flex-auto">
+									Issue an NFT
+								</span>
+							</span>
+						  </CardTitle>
+						  <CardDescription>Perform an initial/additional NFT issuance</CardDescription>
+						</CardHeader>
+					</Card>
+				</a>
+			</div>
+			<div class="col-span-1">
+				<a href="/about">
+					<Card className="mt-3 md:ml-2">
+						<CardHeader>
+						  <CardTitle>
+							<span class="flex">
+								<span class="flex-shrink">
+									<QuestionMarkCircledIcon className="w-6 h-6 mr-3" />
+								</span>
+								<span class="flex-auto">
+									About
+								</span>
+							</span>
+						</CardTitle>
+						  <CardDescription>Do you want to know more?</CardDescription>
+						</CardHeader>
+					</Card>
+				</a>
+			</div>
+		</div>
+		
+		<Footer />
+	</main>
+</Layout>
+
+<style>
+	main {
+		margin: auto;
+		padding: 1rem;
+		width: 900px;
+		max-width: calc(100% - 2rem);
+		color: white;
+		font-size: 20px;
+		line-height: 1.6;
+		min-height: 100vh;
+	}
+</style>

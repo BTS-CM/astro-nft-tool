@@ -1,2 +1,3 @@
-# astro-nft-tool
-Astro + React Bitshares NFT tool for Bitshares (BTS)
+# Bitshares Astro NFT tool
+
+Implemented using React, Astro and ShadCN.

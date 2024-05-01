@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import Header from "@/components/astro/header.astro";
+import Footer from "@/components/astro/footer.astro";
+
+import CreateNFT from "@/components/react/CreateNFT.tsx";
+---
+
+<Layout title="Bitshares Astro NFT Tool - About">
+	<main>
+		<Header />
+		<div class="grid grid-cols-1 mt-5">
+			<div class="col-span-1">
+				<Card>
+					<CardHeader>
+						<CardTitle>Creating a new NFT</CardTitle>
+						<CardDescription>Ready to issue NFTs on the Bitshares blockchain!</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<CreateNFT client:only="react"/>
+					</CardContent>
+				</Card>
+			</div>
+		</div>
+		<Footer />
+	</main>
+</Layout>
+
+<style>
+	main {
+		margin: auto;
+		padding: 1rem;
+		width: 900px;
+		max-width: calc(100% - 2rem);
+		color: white;
+		font-size: 20px;
+		line-height: 1.6;
+		min-height: 100%;
+		height: 100%;
+	}
+</style>
