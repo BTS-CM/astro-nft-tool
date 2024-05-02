@@ -6,7 +6,7 @@ const chains = ["bitshares", "bitshares_testnet"];
 const getAllAssetData = async (chain) => {
   const allData = [];
 
-  if (fs.existsSync(`./src/pages/data/${chain}/allAssets.json`)) {
+  if (fs.existsSync(`./src/data/${chain}/allAssets.json`)) {
     return;
   }
 
@@ -21,10 +21,14 @@ const getAllAssetData = async (chain) => {
 
   allData.push(
     ...assetData.map((asset) => {
+      const isNFT =
+        asset.options.description && JSON.stringify(asset).includes("nft_object") ? true : false;
+
       const mappedResponse = {
         id: asset.id,
         symbol: asset.symbol,
         issuer: asset.issuer,
+        isNFT: isNFT,
       };
 
       return mappedResponse;
@@ -35,9 +39,9 @@ const getAllAssetData = async (chain) => {
 };
 
 function writeToFile(data, chain, fileName, prettyPrint = true) {
-  console.log(`Writing to ./src/pages/data/${chain}/${fileName}.json`);
+  console.log(`Writing to ./src/data/${chain}/${fileName}.json`);
   fs.writeFileSync(
-    `./src/pages/data/${chain}/${fileName}.json`,
+    `./src/data/${chain}/${fileName}.json`,
     prettyPrint ? JSON.stringify(data, undefined, 4) : JSON.stringify(data)
   );
 }
@@ -58,6 +62,7 @@ const main = async () => {
           x: asset.id.replace("1.3.", ""),
           s: asset.symbol,
           i: asset.issuer.replace("1.2.", ""),
+          y: asset.isNFT,
         };
       });
       writeToFile(minimumAssetInfo, chain, "minAssets", false);

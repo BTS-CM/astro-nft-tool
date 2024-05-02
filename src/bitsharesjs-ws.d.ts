@@ -1,4 +1,4 @@
-declare module "bitsharesjs-ws" {
+declare module "bitsharesjs-ws"; /* {
   export namespace Apis {
     function instance(
       node?: string,
@@ -8,4 +8,4 @@ declare module "bitsharesjs-ws" {
       errorCallback?: (error: Error) => void
     ): any;
   }
-}
+}*/

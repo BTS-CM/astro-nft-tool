@@ -39,7 +39,11 @@ export async function GET({ params }: { params: Params }) {
     console.log({ error });
   }
 
-  Apis.instance().close();
+  try {
+    await Apis.close();
+  } catch (error) {
+    console.log({ error, msg: "Error closing connection" });
+  }
 
   if (!object || !object.length) {
     return new Response(JSON.stringify({ error: "Invalid asset" }), {

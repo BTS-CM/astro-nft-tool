@@ -50,8 +50,12 @@ async function getObjects(chain, object_ids) {
       throw new Error("Couldn't retrieve objects");
     }
 
-    Apis.instance().close();
-    resolve(retrievedObjects);
+    try {
+      await Apis.close();
+    } catch (error) {
+      console.log({ error, msg: "Error closing connection" });
+    }
+    return resolve(retrievedObjects);
   });
 }
 
@@ -62,9 +66,8 @@ async function getMaxObjectIDs(chain, space_id, type_id) {
   return new Promise(async (resolve, reject) => {
     const _node = chain === "bitshares" ? "wss://node.xbts.io/ws" : "wss://testnet.xbts.io/ws";
 
-    let currentAPI;
     try {
-      currentAPI = await Apis.instance(_node, true, 4000).init_promise;
+      await Apis.instance(_node, true, 4000).init_promise;
     } catch (error) {
       console.log({ error });
       reject(error);
@@ -78,13 +81,16 @@ async function getMaxObjectIDs(chain, space_id, type_id) {
         .exec("get_next_object_id", [space_id, type_id, false]);
     } catch (error) {
       console.log({ error, space_id, type_id });
-      reject(error);
       return;
     }
 
-    Apis.instance().close();
+    try {
+      await Apis.close();
+    } catch (error) {
+      console.log({ error, msg: "Error closing connection" });
+    }
 
-    resolve(parseInt(nextObjectId.split(".")[2]) - 1);
+    return resolve(parseInt(nextObjectId.split(".")[2]) - 1);
   });
 }
 
@@ -109,8 +115,15 @@ async function fetchAllAssets(chain) {
       nextObjectId = await Apis.instance().db_api().exec("get_next_object_id", [1, 3, false]);
     } catch (error) {
       console.log({ error });
-      reject(error);
-      return;
+    }
+
+    if (!nextObjectId) {
+      try {
+        await Apis.close();
+      } catch (error) {
+        console.log({ error, msg: "Error closing connection" });
+      }
+      return reject("Couldn't get next object ID");
     }
 
     const maxObjectId = parseInt(nextObjectId.split(".")[2]) - 1;
@@ -135,12 +148,18 @@ async function fetchAllAssets(chain) {
       }
     }
 
+    try {
+      await Apis.close();
+    } catch (error) {
+      console.log({ error, msg: "Error closing connection" });
+    }
+
     if (!retrievedObjects || !retrievedObjects.length) {
-      throw new Error("Couldn't retrieve objects");
+      return reject("Couldn't retrieve objects");
     }
 
     Apis.instance().close();
-    resolve(retrievedObjects);
+    return resolve(retrievedObjects);
   });
 }
 

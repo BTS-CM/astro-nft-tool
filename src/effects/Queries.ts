@@ -16,14 +16,4 @@ const [createIssuedAssetStore] = nanoquery({
   },
 });
 
-/*
-async function createIssuedAssetStore(chain: string, username: string) {
-  return fetch(`/endpoints/${chain}/issued/${username}.json`).then((response) => response.json());
-}
-
-async function createAssetStore(chain: string, assetID: string) {
-  return fetch(`/endpoints/${chain}/asset/${assetID}.json`).then((response) => response.json());
-}
-*/
-
 export { createAssetStore, createIssuedAssetStore };

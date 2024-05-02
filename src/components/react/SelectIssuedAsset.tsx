@@ -27,7 +27,7 @@ export default function SelectedIssuedAsset() {
     const unsub = userIssuedAssetStore.subscribe((result) => {
       if (result.error) {
         console.error(result.error);
-        setLoading(false); // Stop loading on error
+        setLoading(false);
       }
 
       if (!result.loading) {
@@ -35,13 +35,13 @@ export default function SelectedIssuedAsset() {
           const res = result.data;
           setResponse(res as object[]);
         }
-        setLoading(false); // Stop loading when data is received or in case of an error
+        setLoading(false);
       }
     });
 
     return () => {
       unsub();
-      setLoading(false); // Ensure loading is set to false when the component unmounts or the usr changes
+      setLoading(false);
     };
   }, [usr]);
 

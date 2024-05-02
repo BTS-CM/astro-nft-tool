@@ -19,9 +19,8 @@ export async function GET({ params }: { params: Params }) {
 
   const _node = chain === "bitshares" ? "wss://node.xbts.io/ws" : "wss://testnet.xbts.io/ws";
 
-  let connection;
   try {
-    connection = await Apis.instance(_node, true, 4000).init_promise;
+    await Apis.instance(_node, true, 4000).init_promise;
   } catch (error) {
     console.log({ error });
     return new Response(JSON.stringify({ error: "connection issues" }), {
@@ -39,6 +38,12 @@ export async function GET({ params }: { params: Params }) {
     console.log({ error });
   }
 
+  try {
+    await Apis.close();
+  } catch (error) {
+    console.log({ error, msg: "Error closing connection" });
+  }
+
   if (!object || !object.length) {
     return new Response(JSON.stringify({ error: "Invalid account" }), {
       status: 404,
@@ -46,14 +51,15 @@ export async function GET({ params }: { params: Params }) {
     });
   }
 
-  Apis.instance().close();
-
-  const finalResult = {
-    username: object[0].name,
-    id: object[0].id,
-    chain,
-    referrer: object[0].referrer,
-  };
+  const finalResult =
+    object && object.length
+      ? {
+          username: object[0].name,
+          id: object[0].id,
+          chain,
+          referrer: object[0].referrer,
+        }
+      : null;
 
   return new Response(JSON.stringify(finalResult), {
     status: 200,
