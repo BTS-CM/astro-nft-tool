@@ -51,7 +51,7 @@ export async function GET({ params }: { params: Params }) {
     console.log(error);
   }
 
-  if (!fullAccounts.length || !fullAccounts[0].length) {
+  if (!fullAccounts || !fullAccounts.length || !fullAccounts[0].length) {
     try {
       await Apis.close();
     } catch (error) {

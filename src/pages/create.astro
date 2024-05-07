@@ -19,10 +19,10 @@ import CreateNFT from "@/components/react/CreateNFT.tsx";
 		<Header />
 		<div class="grid grid-cols-1 mt-5">
 			<div class="col-span-1">
-				<Card>
+				<Card className="bg-gray-100">
 					<CardHeader>
-						<CardTitle>Creating a new NFT</CardTitle>
-						<CardDescription>Ready to issue NFTs on the Bitshares blockchain!</CardDescription>
+						<CardTitle>NFT Creation form</CardTitle>
+						<CardDescription>Ready to create/edit your NFTs on the Bitshares blockchain!</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<CreateNFT client:only="react"/>
