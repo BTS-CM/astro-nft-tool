@@ -6,6 +6,7 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
+    "preview": "astro build && astro preview",
     "eraseData": "rm -rf ./src/data/bitshares/* && rm -rf ./src/data/bitshares_testnet/*",
     "fetchAssets": "node ./src/scripts/fetchAssets.js",
     "fetchIssuers": "node ./src/scripts/fetchAssetIssuers.js"

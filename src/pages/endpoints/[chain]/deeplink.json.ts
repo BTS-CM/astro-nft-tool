@@ -13,9 +13,8 @@ async function generateDeepLink(chain: String, opType: String, operations: Array
   return new Promise(async (resolve, reject) => {
     const _node = chain === "bitshares" ? "wss://node.xbts.io/ws" : "wss://testnet.xbts.io/ws";
 
-    let currentAPI;
     try {
-      currentAPI = await Apis.instance(_node, true, 4000).init_promise;
+      await Apis.instance(_node, true, 4000).init_promise;
     } catch (error) {
       console.log({ error, location: "api instance failed" });
       return reject(error);
@@ -51,7 +50,7 @@ async function generateDeepLink(chain: String, opType: String, operations: Array
     }
 
     try {
-      tr.finalize(currentAPI);
+      tr.finalize();
     } catch (error) {
       console.log({ error, location: "finalize failed" });
       reject(error);

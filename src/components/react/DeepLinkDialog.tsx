@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,13 +15,11 @@ import {
 } from "@/components/ui/dialog";
 
 import { copyToClipboard } from "@/lib/common.js";
+import { $currentUser } from "@/stores/users.ts";
 
 interface DeepLinkDialogProps {
-  trxJSON: string; // Assuming trxJSON is a string, adjust the type accordingly
+  trxJSON: object[];
   operationName: string;
-  username: string;
-  usrChain: string;
-  userID: string | number; // Adjust based on whether userID is expected to be a string or a number
   dismissCallback: (open: boolean) => void; // Assuming it's a function that returns void, adjust if needed
   headerText: string;
 }
@@ -33,40 +31,39 @@ interface DeepLinkDialogProps {
 export default function DeepLinkDialog({
   trxJSON,
   operationName,
-  username,
-  usrChain,
-  userID,
   dismissCallback,
   headerText,
 }: DeepLinkDialogProps) {
   const [activeTab, setActiveTab] = useState<string | null>("object");
   const [deeplink, setDeeplink] = useState<string | null>();
+
+  const usr = useSyncExternalStore($currentUser.subscribe, $currentUser.get, $currentUser.get);
+
   useEffect(() => {
     async function createDeepLink() {
-      const response = await fetch(
-        `http://localhost:8080/api/deeplink/${usrChain}/${operationName}`,
-        {
-          method: "POST",
-          body: JSON.stringify(trxJSON),
-        }
-      );
+      const response = await fetch(`http://localhost:4321/endpoints/${usr.chain}/deeplink.json`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          chain: usr.chain,
+          opType: operationName,
+          operations: trxJSON,
+        }),
+      });
 
-      if (!response.ok) {
-        console.log("Failed to fetch deeplink");
-        return;
-      }
+      const responseContents = response ? await response.json() : null;
 
-      const responseContents = await response.json();
-
-      if (responseContents && responseContents.generatedDeepLink) {
-        setDeeplink(responseContents.generatedDeepLink);
+      if (responseContents && responseContents.deeplink) {
+        setDeeplink(responseContents.deeplink);
       }
     }
 
-    if (usrChain && operationName && trxJSON) {
+    if (operationName && trxJSON) {
       createDeepLink();
     }
-  }, [usrChain, operationName, trxJSON]);
+  }, [operationName, trxJSON]);
 
   const [downloadClicked, setDownloadClicked] = useState(false);
   const handleDownloadClick = () => {
@@ -89,7 +86,7 @@ export default function DeepLinkDialog({
         <DialogHeader>
           <DialogTitle>{!deeplink ? "Generating deeplink..." : <>{headerText}</>}</DialogTitle>
           <DialogDescription>
-            With the account: {username} ({userID})
+            With the account: {usr.username} ({usr.id})
             {deeplink ? (
               <>
                 <br />
@@ -180,14 +177,14 @@ export default function DeepLinkDialog({
                     <>
                       <a
                         href={`rawbeet://api?chain=${
-                          usrChain === "bitshares" ? "BTS" : "BTS_TEST"
+                          usr.chain === "bitshares" ? "BTS" : "BTS_TEST"
                         }&request=${deeplink}`}
                       >
                         <Button className="mt-4">BEET</Button>
                       </a>
                       <a
                         href={`rawbeeteos://api?chain=${
-                          usrChain === "bitshares" ? "BTS" : "BTS_TEST"
+                          usr.chain === "bitshares" ? "BTS" : "BTS_TEST"
                         }&request=${deeplink}`}
                       >
                         <Button className="mt-4 ml-3">BeetEOS</Button>

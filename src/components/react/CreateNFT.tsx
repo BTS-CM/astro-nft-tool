@@ -4,11 +4,11 @@ import { FixedSizeList as List } from "react-window";
 import HoverInfo from "@/components/react/HoverInfo.tsx";
 import AssetPermission from "@/components/react/AssetPermission.tsx";
 import AssetFlag from "@/components/react/AssetFlag.tsx";
+import DeepLinkDialog from "@/components/react/DeepLinkDialog.tsx";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 
 import {
   Select,
@@ -41,7 +41,7 @@ import {
 import { $currentUser } from "@/stores/users.ts";
 import { useInitCache } from "@/effects/Init.ts";
 import { createAssetStore } from "@/effects/Queries.ts";
-import { getFlagBooleans } from "@/lib/common.ts";
+import { getPermissions, getFlags, getFlagBooleans } from "@/lib/permissions.ts";
 
 interface NFTObject {
   acknowledgements: string;
@@ -171,35 +171,30 @@ export default function SelectedIssuedAsset() {
   }, []);
 
   const [response, setResponse] = useState<ApiResponse>();
-  const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
     if (!usr || !usr.chain || !existingNFT) return;
-    setLoading(true); // Start loading
 
     const assetStore = createAssetStore([usr.chain, existingNFT]);
 
     const unsub = assetStore.subscribe((result) => {
       if (result.error) {
         console.error(result.error);
-        setLoading(false);
       }
 
       if (!result.loading) {
         if (result.data) {
           const res = result.data;
-          console.log({ res });
           setResponse(res as ApiResponse);
         }
-        setLoading(false);
       }
     });
 
     return () => {
       unsub();
-      setLoading(false);
     };
   }, [usr, existingNFT]);
 
+  // NFT info
   const [acknowledgements, setAcknowledgements] = useState<string>("");
   const [artist, setArtist] = useState<string>("");
   const [attestation, setAttestation] = useState<string>("");
@@ -210,6 +205,8 @@ export default function SelectedIssuedAsset() {
   const [tags, setTags] = useState<string>("");
   const [type, setType] = useState<string>("NFT/ART/VISUAL");
   const [main, setMain] = useState<string>("");
+
+  // Asset info
   const [market, setMarket] = useState<string>(usr.chain === "bitshares" ? "BTS" : "TEST");
   const [shortName, setShortName] = useState<string>("");
   const [symbol, setSymbol] = useState<string>("");
@@ -220,18 +217,21 @@ export default function SelectedIssuedAsset() {
   const [cerQuoteAmount, setCerQuoteAmount] = useState<number>(1);
   const [cerQuoteAssetId, setCerQuoteAssetId] = useState<string>("1.3.1");
 
+  // Check if the permissions have been permanently disabled:
+  const [disabledChargeMarketFee, setDisabledChargeMarketFee] = useState<boolean>(false); // For
+  const [disabledWhiteList, setDisabledWhiteList] = useState<boolean>(false);
+  const [disabledOverrideAuthority, setDisabledOverrideAuthority] = useState<boolean>(false);
+  const [disabledTransferRestricted, setDisabledTransferRestricted] = useState<boolean>(false);
+  const [disabledDisableConfidential, setDisabledDisableConfidential] = useState<boolean>(false);
+
+  // Initializing permissions
   const [permChargeMarketFee, setPermChargeMarketFee] = useState<boolean>(true);
   const [permWhiteList, setPermWhiteList] = useState<boolean>(true);
   const [permOverrideAuthority, setPermOverrideAuthority] = useState<boolean>(true);
   const [permTransferRestricted, setPermTransferRestricted] = useState<boolean>(true);
   const [permDisableConfidential, setPermDisableConfidential] = useState<boolean>(true);
 
-  const [disabledChargeMarketFee, setDisabledChargeMarketFee] = useState<boolean>(false);
-  const [disabledWhiteList, setDisabledWhiteList] = useState<boolean>(false);
-  const [disabledOverrideAuthority, setDisabledOverrideAuthority] = useState<boolean>(false);
-  const [disabledTransferRestricted, setDisabledTransferRestricted] = useState<boolean>(false);
-  const [disabledDisableConfidential, setDisabledDisableConfidential] = useState<boolean>(false);
-
+  // Initializing flags
   const [flagChargeMarketFee, setFlagChargeMarketFee] = useState<boolean>(false);
   const [flagWhiteList, setFlagWhiteList] = useState<boolean>(false);
   const [flagOverrideAuthority, setFlagOverrideAuthority] = useState<boolean>(false);
@@ -241,6 +241,8 @@ export default function SelectedIssuedAsset() {
   const [nftMedia, setNFTMedia] = useState<NFTMEDIA[]>([]);
   const [newMediaType, setNewMediaType] = useState<string>("");
   const [newMediaUrl, setNewMediaUrl] = useState<string>("");
+
+  const [trx, setTRX] = useState<object[]>();
 
   useEffect(() => {
     if (
@@ -295,11 +297,11 @@ export default function SelectedIssuedAsset() {
               disable_confidential: false,
             };
 
-      setPermChargeMarketFee(permissionBooleans.charge_market_fee);
-      setPermWhiteList(permissionBooleans.white_list);
-      setPermOverrideAuthority(permissionBooleans.override_authority);
-      setPermTransferRestricted(permissionBooleans.transfer_restricted);
-      setPermDisableConfidential(permissionBooleans.disable_confidential);
+      setPermChargeMarketFee(permissionBooleans.charge_market_fee || false);
+      setPermWhiteList(permissionBooleans.white_list || false);
+      setPermOverrideAuthority(permissionBooleans.override_authority || false);
+      setPermTransferRestricted(permissionBooleans.transfer_restricted || false);
+      setPermDisableConfidential(permissionBooleans.disable_confidential || false);
 
       if (permissionBooleans.charge_market_fee === true) {
         setDisabledChargeMarketFee(true);
@@ -321,11 +323,11 @@ export default function SelectedIssuedAsset() {
         setDisabledDisableConfidential(true);
       }
 
-      setFlagChargeMarketFee(flagBooleans.charge_market_fee);
-      setFlagWhiteList(flagBooleans.white_list);
-      setFlagOverrideAuthority(flagBooleans.override_authority);
-      setFlagTransferRestricted(flagBooleans.transfer_restricted);
-      setFlagDisableConfidential(flagBooleans.disable_confidential);
+      setFlagChargeMarketFee(flagBooleans.charge_market_fee || false);
+      setFlagWhiteList(flagBooleans.white_list || false);
+      setFlagOverrideAuthority(flagBooleans.override_authority || false);
+      setFlagTransferRestricted(flagBooleans.transfer_restricted || false);
+      setFlagDisableConfidential(flagBooleans.disable_confidential || false);
 
       if (nft_object) {
         //const blah: NFTMEDIA[] = getImages(nft_object);
@@ -333,228 +335,6 @@ export default function SelectedIssuedAsset() {
       }
     }
   }, [response]);
-
-  if (loading) {
-    return <p>Loading {existingNFT}...</p>;
-  }
-
-  /**
-   * Generate booleans for the permissions
-   * @param {Object} values
-   * @returns {Object}
-   */
-  function generatePermissionBooleans(values: any) {
-    return {
-      charge_market_fee: values.perm_charge_market_fee,
-      white_list: values.perm_white_list,
-      override_authority: values.perm_override_authority,
-      transfer_restricted: values.perm_transfer_restricted,
-      disable_confidential: values.perm_disable_confidential,
-    };
-  }
-
-  /**
-   * Generate booleans for the flags
-   * @param {Object} values
-   * @returns {Object}
-   */
-  function generateFlagBooleans(values: any) {
-    return {
-      charge_market_fee: values.flag_charge_market_fee,
-      white_list: values.flag_white_list,
-      override_authority: values.flag_override_authority,
-      transfer_restricted: values.flag_transfer_restricted,
-      disable_confidential: values.flag_disable_confidential,
-    };
-  }
-
-  /**
-   * Generate the NFT object
-   * @param {Object} values
-   * @returns {Object}
-   */
-  /*
-  function generateNFTObj(values) {
-    const nft_object = {
-      acknowledgements: values.acknowledgements,
-      artist: values.artist,
-      attestation: values.attestation,
-      encoding: 'ipfs',
-      holder_license: values.holder_license,
-      license: values.license,
-      narrative: values.narrative,
-      title: values.title,
-      tags: values.tags,
-      type: values.type,
-      sig_pubkey_or_address: values.sig_pubkey_or_address,
-    };
-
-    asset_images.forEach((image) => {
-      // Supports png, jpeg & gif, following the NFT spec
-      const imageType = image.type;
-      if (!nft_object[`media_${imageType}_multihash`]) {
-        // only the first image is used for the main image
-        nft_object[`media_${imageType}_multihash`] = image.url;
-      }
-
-      const sameTypeFiles = asset_images.filter((img) => img.type === imageType);
-      if (sameTypeFiles && sameTypeFiles.length > 1) {
-        if (!nft_object[`media_${imageType}_multihashes`]) {
-          // initialise the ipfs multihashes array
-          nft_object[`media_${imageType}_multihashes`] = [{
-            url: image.url,
-          }];
-        } else {
-          // add the image to the ipfs multihashes array
-          nft_object[`media_${imageType}_multihashes`].push({
-            url: image.url,
-          });
-        }
-      }
-    });
-
-    return nft_object;
-  }
-  */
-
-  /**
-   * Signing primary form values with memo key prior to broadcast
-   * @param {Object} values
-   */
-  /*
-    async function processForm(values) {
-      setInProgress(true);
-      const permissionBooleans = generatePermissionBooleans(values);
-      const flagBooleans = generateFlagBooleans(values);
-      const nft_object = generateNFTObj(values);
-  
-      const issuer_permissions = getPermissions(permissionBooleans, false);
-      const flags = getFlags(flagBooleans);
-  
-        const description = JSON.stringify({
-          main: values.main,
-          market: values.market,
-          nft_object: nft_object,
-          short_name: values.short_name,
-        });
-  
-        const operation = mode === 'create'
-          ? {
-            // create asset json
-            issuer: userID,
-            symbol: values.symbol,
-            precision: values.precision,
-            common_options: {
-              max_supply: values.max_supply,
-              market_fee_percent: 0,
-              max_market_fee: 0,
-              issuer_permissions,
-              flags,
-              core_exchange_rate: {
-                base: {
-                  amount: values.cer_base_amount,
-                  asset_id: values.cer_base_asset_id,
-                },
-                quote: {
-                  amount: values.cer_quote_amount,
-                  asset_id: values.cer_quote_asset_id,
-                },
-              },
-              whitelist_authorities: [],
-              blacklist_authorities: [],
-              whitelist_markets: [],
-              blacklist_markets: [],
-              description,
-              extensions: {
-                reward_percent: 0,
-                whitelist_market_fee_sharing: [],
-              },
-            },
-            is_prediction_market: false,
-            extensions: null,
-          }
-          : {
-            // edit asset json
-            issuer: userID,
-            asset_to_update: asset.id,
-            new_options: {
-              max_supply: parseInt(values.max_supply, 10),
-              market_fee_percent: 0,
-              max_market_fee: 0,
-              issuer_permissions,
-              flags,
-              core_exchange_rate: {
-                base: {
-                  amount: parseInt(values.cer_base_amount, 10),
-                  asset_id: values.cer_base_asset_id,
-                },
-                quote: {
-                  amount: parseInt(values.cer_quote_amount, 10),
-                  asset_id: values.cer_quote_asset_id,
-                },
-              },
-              whitelist_authorities: [],
-              blacklist_authorities: [],
-              whitelist_markets: [],
-              blacklist_markets: [],
-              description,
-              extensions: {
-                reward_percent: 0,
-                whitelist_market_fee_sharing: [],
-              },
-            },
-            is_prediction_market: false,
-            extensions: null,
-          };
-  
-        if (accountType === 'BEET') {
-          let tx;
-          try {
-            tx = await broadcastOperation(
-              connection,
-              wsURL,
-              mode === 'create' ? 'asset_create' : 'asset_update',
-              operation,
-            );
-          } catch (error) {
-            console.log(error);
-            setInProgress(false);
-            return;
-          }
-  
-          setBroadcastResult(tx);
-        } else {
-          let generatedLocalContents;
-          try {
-            generatedLocalContents = await generateDeepLink(
-              'nft_creator',
-              environment === "bitshares" ? "BTS" : "BTS_TEST",
-              wsURL,
-              mode === 'create'
-                ? 'asset_create'
-                : 'asset_update',
-              [operation],
-            );
-          } catch (error) {
-            console.log(error);
-            setInProgress(false);
-            return;
-          }
-  
-          if (generatedLocalContents) {
-            setLocalContents(generatedLocalContents);
-          }
-        }
-  
-        setInProgress(false);
-    }
-    */
-
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-
-    console.log("Form submitted");
-  };
 
   const MediaRow: React.FC<RowProps> = ({ index, style }) => {
     if (!nftMedia || !nftMedia.length || !nftMedia[index]) {
@@ -1177,7 +957,160 @@ export default function SelectedIssuedAsset() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="h-8">Broadcast operation</Button>
+            <Button
+              className="h-8"
+              onClick={async () => {
+                const nft_object: NFTObject = {
+                  acknowledgements: acknowledgements,
+                  artist: artist,
+                  attestation: attestation,
+                  encoding: "ipfs",
+                  holder_license: holderLicense,
+                  license: license,
+                  narrative: narrative,
+                  title: title,
+                  tags: tags,
+                  type: type,
+                };
+
+                nftMedia.forEach((image) => {
+                  // Supports png, jpeg & gif, following the NFT spec
+                  const imageType = image.type;
+                  if (!nft_object[`media_${imageType}_multihash`]) {
+                    // only the first image is used for the main image
+                    nft_object[`media_${imageType}_multihash`] = image.url;
+                  }
+
+                  const sameTypeFiles = nftMedia.filter((img) => img.type === imageType);
+                  if (sameTypeFiles && sameTypeFiles.length > 1) {
+                    if (!nft_object[`media_${imageType}_multihashes`]) {
+                      // initialise the ipfs multihashes array
+                      nft_object[`media_${imageType}_multihashes`] = [
+                        {
+                          url: image.url,
+                        },
+                      ];
+                    } else {
+                      // add the image to the ipfs multihashes array
+                      nft_object[`media_${imageType}_multihashes`].push({
+                        url: image.url,
+                      });
+                    }
+                  }
+                });
+
+                const issuer_permissions = getPermissions(
+                  {
+                    charge_market_fee: permChargeMarketFee,
+                    white_list: permWhiteList,
+                    override_authority: permOverrideAuthority,
+                    transfer_restricted: permTransferRestricted,
+                    disable_confidential: permDisableConfidential,
+                  },
+                  false
+                );
+
+                const flags = getFlags({
+                  charge_market_fee: flagChargeMarketFee,
+                  white_list: flagWhiteList,
+                  override_authority: flagOverrideAuthority,
+                  transfer_restricted: flagTransferRestricted,
+                  disable_confidential: flagDisableConfidential,
+                });
+
+                const description = JSON.stringify({
+                  main: main,
+                  market: market,
+                  nft_object: nft_object,
+                  short_name: shortName,
+                });
+
+                setTRX(
+                  !existingNFT
+                    ? [
+                        {
+                          // create asset json
+                          issuer: usr.id,
+                          symbol: symbol,
+                          precision: precision,
+                          common_options: {
+                            max_supply: maxSupply,
+                            market_fee_percent: 0,
+                            max_market_fee: 0,
+                            issuer_permissions,
+                            flags,
+                            core_exchange_rate: {
+                              base: {
+                                amount: cerBaseAmount,
+                                asset_id: cerBaseAssetId,
+                              },
+                              quote: {
+                                amount: cerQuoteAmount,
+                                asset_id: cerQuoteAssetId,
+                              },
+                            },
+                            whitelist_authorities: [],
+                            blacklist_authorities: [],
+                            whitelist_markets: [],
+                            blacklist_markets: [],
+                            description,
+                            extensions: {
+                              reward_percent: 0,
+                              whitelist_market_fee_sharing: [],
+                            },
+                          },
+                          is_prediction_market: false,
+                          extensions: null,
+                        },
+                      ]
+                    : [
+                        {
+                          // edit asset json
+                          issuer: usr.id,
+                          asset_to_update: response ? response.id : "",
+                          new_options: {
+                            max_supply: parseInt(maxSupply.toString(), 10),
+                            market_fee_percent: 0,
+                            max_market_fee: 0,
+                            issuer_permissions,
+                            flags,
+                            core_exchange_rate: {
+                              base: {
+                                amount: parseInt(cerBaseAmount.toString(), 10),
+                                asset_id: cerBaseAssetId,
+                              },
+                              quote: {
+                                amount: parseInt(cerQuoteAmount.toString(), 10),
+                                asset_id: cerQuoteAssetId,
+                              },
+                            },
+                            whitelist_authorities: [],
+                            blacklist_authorities: [],
+                            whitelist_markets: [],
+                            blacklist_markets: [],
+                            description,
+                            extensions: {
+                              reward_percent: 0,
+                              whitelist_market_fee_sharing: [],
+                            },
+                          },
+                          is_prediction_market: false,
+                          extensions: null,
+                        },
+                      ]
+                );
+              }}
+            >
+              Broadcast operation
+            </Button>
+            {trx ? (
+              <DeepLinkDialog
+                trxJSON={trx}
+                operationName={existingNFT ? "asset_update" : "asset_create"}
+                dismissCallback={() => setTRX(undefined)}
+                headerText={`Ready to ${existingNFT ? "update" : "create"} your NFT!`}
+              />
+            ) : null}
           </CardContent>
         </Card>
       </div>
