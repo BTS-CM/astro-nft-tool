@@ -41,17 +41,22 @@ export default function DeepLinkDialog({
 
   useEffect(() => {
     async function createDeepLink() {
-      const response = await fetch(`http://localhost:4321/endpoints/${usr.chain}/deeplink.json`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          chain: usr.chain,
-          opType: operationName,
-          operations: trxJSON,
-        }),
-      });
+      let response;
+      try {
+        response = await fetch(`http://localhost:4321/endpoints/${usr.chain}/deeplink.json`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chain: usr.chain,
+            opType: operationName,
+            operations: trxJSON,
+          }),
+        });
+      } catch (error) {
+        console.log({ error });
+      }
 
       const responseContents = response ? await response.json() : null;
 

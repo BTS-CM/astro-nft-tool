@@ -1,4 +1,5 @@
-import { Apis } from "bitsharesjs-ws";
+import Apis from "@/blockchain/ws/ApiInstances";
+import { closeWSS } from "@/lib/common.js";
 
 interface Params {
   account: string;
@@ -19,30 +20,40 @@ export async function GET({ params }: { params: Params }) {
 
   const _node = chain === "bitshares" ? "wss://node.xbts.io/ws" : "wss://testnet.xbts.io/ws";
 
+  let currentAPI;
   try {
-    await Apis.instance(_node, true, 4000).init_promise;
+    currentAPI = await Apis.instance(
+      _node,
+      true,
+      4000,
+      { enableDatabase: true, enableCrypto: false, enableOrders: false },
+      (error: Error) => console.log({ error })
+    );
   } catch (error) {
-    console.log({ error });
+    console.log({ error, location: "api instance failed" });
     return new Response(JSON.stringify({ error: "connection issues" }), {
       status: 500,
       statusText: "Error connecting to blockchain",
     });
   }
 
+  if (!currentAPI.db_api()) {
+    console.log("no db_api");
+    await closeWSS(currentAPI);
+    return new Response(JSON.stringify({ error: "connection issues" }), {
+      status: 500,
+      statusText: "Error connecting to blockchain database",
+    });
+  }
+
   let object;
   try {
-    object = await Apis.instance()
-      .db_api()
-      .exec("get_accounts", [[account]]);
+    object = await currentAPI.db_api().exec("get_accounts", [[account]]);
   } catch (error) {
     console.log({ error });
   }
 
-  try {
-    await Apis.close();
-  } catch (error) {
-    console.log({ error, msg: "Error closing connection" });
-  }
+  await closeWSS(currentAPI);
 
   if (!object || !object.length) {
     return new Response(JSON.stringify({ error: "Invalid account" }), {

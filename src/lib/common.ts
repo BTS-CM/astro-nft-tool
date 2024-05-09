@@ -1,8 +1,5 @@
 /**
  * Convert human readable quantity into the token's blockchain representation
- * @param {number} satoshis
- * @param {number} precision
- * @returns {number}
  */
 function blockchainFloat(satoshis: number, precision: number) {
   return satoshis * 10 ** precision;
@@ -10,7 +7,6 @@ function blockchainFloat(satoshis: number, precision: number) {
 
 /**
  * Copy the provided text to the user's clipboard
- * @param {String} text
  */
 function copyToClipboard(text: string) {
   navigator.clipboard
@@ -25,9 +21,6 @@ function copyToClipboard(text: string) {
 
 /**
  * Convert the token's blockchain representation into a human readable quantity
- * @param {number} satoshis
- * @param {number} precision
- * @returns {number}
  */
 function humanReadableFloat(satoshis: number, precision: number) {
   return parseFloat((satoshis / 10 ** precision).toFixed(precision));
@@ -35,9 +28,6 @@ function humanReadableFloat(satoshis: number, precision: number) {
 
 /**
  * Trim market order prices
- * @param {string} price
- * @param {number} precision
- * @returns {number}
  */
 function trimPrice(price: string, precision: number) {
   return parseFloat(price).toFixed(precision);
@@ -45,8 +35,6 @@ function trimPrice(price: string, precision: number) {
 
 /**
  * Convert date time string to time since string
- * @param {string} timestamp
- * @returns
  */
 function getTimeSince(timestamp: string) {
   const now = new Date();
@@ -70,9 +58,6 @@ function getTimeSince(timestamp: string) {
 
 /**
  * Delaying the execution of the function until the user stops typing
- * @param {function} func
- * @param {number} delay
- * @returns {function}
  */
 function debounce(func: Function, delay: number) {
   let timerId: any;
@@ -86,14 +71,21 @@ function debounce(func: Function, delay: number) {
 
 /**
  * Checks the current order of the base and quote assets and returns a boolean identifying the order
- * @param {string} _baseID
- * @param {string} _quoteID
- * @returns {boolean}
  */
 function isInvertedMarket(_baseID: string, _quoteID: string) {
   const baseID = parseInt(_baseID.split(".")[2], 10);
   const quoteID = parseInt(_quoteID.split(".")[2], 10);
   return baseID > quoteID;
+}
+
+async function closeWSS(API: any) {
+  if (API) {
+    try {
+      await API.close();
+    } catch (error) {
+      console.log({ error, msg: "Error closing connection" });
+    }
+  }
 }
 
 export {
@@ -103,6 +95,6 @@ export {
   humanReadableFloat,
   trimPrice,
   getTimeSince,
-  getFlagBooleans,
   isInvertedMarket,
+  closeWSS,
 };

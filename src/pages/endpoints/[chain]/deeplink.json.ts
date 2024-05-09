@@ -1,6 +1,10 @@
-import { Apis } from "bitsharesjs-ws";
-import { TransactionBuilder } from "bitsharesjs";
+import Apis from "@/blockchain/ws/ApiInstances";
+import TransactionBuilder from "@/blockchain/chain/TransactionBuilder";
+
 import { v4 as uuidv4 } from "uuid";
+
+import { closeWSS } from "@/lib/common.js";
+
 /**
  * Returns deeplink contents
  * @param chain
@@ -9,12 +13,19 @@ import { v4 as uuidv4 } from "uuid";
  * @param app
  * @returns generated deeplink
  */
-async function generateDeepLink(chain: String, opType: String, operations: Array<Object>) {
+async function generateDeepLink(chain: string, opType: string, operations: object[]) {
   return new Promise(async (resolve, reject) => {
     const _node = chain === "bitshares" ? "wss://node.xbts.io/ws" : "wss://testnet.xbts.io/ws";
 
+    let currentAPI;
     try {
-      await Apis.instance(_node, true, 4000).init_promise;
+      currentAPI = await Apis.instance(
+        _node,
+        true,
+        4000,
+        { enableDatabase: true, enableCrypto: false, enableOrders: true },
+        (error: Error) => console.log({ error })
+      );
     } catch (error) {
       console.log({ error, location: "api instance failed" });
       return reject(error);
@@ -26,17 +37,19 @@ async function generateDeepLink(chain: String, opType: String, operations: Array
     }
 
     try {
-      await tr.update_head_block();
+      await tr.update_head_block(currentAPI);
     } catch (error) {
       console.log({ error, location: "update head block failed" });
+      await closeWSS();
       reject(error);
       return;
     }
 
     try {
-      await tr.set_required_fees();
+      await tr.set_required_fees(null, null, currentAPI);
     } catch (error) {
       console.log({ error, location: "set required fees failed" });
+      await closeWSS();
       reject(error);
       return;
     }
@@ -45,14 +58,16 @@ async function generateDeepLink(chain: String, opType: String, operations: Array
       tr.set_expire_seconds(7200);
     } catch (error) {
       console.log({ error, location: "set expire seconds failed" });
+      await closeWSS();
       reject(error);
       return;
     }
 
     try {
-      tr.finalize();
+      tr.finalize(currentAPI);
     } catch (error) {
       console.log({ error, location: "finalize failed" });
+      await closeWSS();
       reject(error);
       return;
     }
@@ -70,6 +85,8 @@ async function generateDeepLink(chain: String, opType: String, operations: Array
       },
     };
 
+    await closeWSS();
+
     let encodedPayload;
     try {
       encodedPayload = encodeURIComponent(JSON.stringify(request));
@@ -85,7 +102,13 @@ async function generateDeepLink(chain: String, opType: String, operations: Array
 
 export async function POST({ request }) {
   if (request.headers.get("Content-Type") === "application/json") {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (error) {
+      console.log({ error, location: "parse request body failed" });
+      return new Response(null, { status: 400 });
+    }
 
     const { chain, opType, operations } = body;
 

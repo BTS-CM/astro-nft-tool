@@ -1,4 +1,5 @@
-import { Apis } from "bitsharesjs-ws";
+import Apis from "@/blockchain/ws/ApiInstances";
+import { closeWSS } from "@/lib/common.js";
 
 /**
  * Split an array into array chunks
@@ -21,7 +22,13 @@ async function getObjects(chain, object_ids) {
 
     let currentAPI;
     try {
-      currentAPI = await Apis.instance(_node, true, 4000).init_promise;
+      currentAPI = await Apis.instance(
+        _node,
+        true,
+        4000,
+        { enableDatabase: true, enableCrypto: false, enableOrders: false },
+        (error) => console.log({ error })
+      );
     } catch (error) {
       console.log({ error, msg: "instance failed" });
       reject(error);
@@ -35,7 +42,7 @@ async function getObjects(chain, object_ids) {
       const currentChunk = chunksOfInputs[i];
       let got_objects;
       try {
-        got_objects = await Apis.instance().db_api().exec("get_objects", [currentChunk, false]);
+        got_objects = await currentAPI.db_api().exec("get_objects", [currentChunk, false]);
       } catch (error) {
         console.log({ error });
         continue;
@@ -50,11 +57,8 @@ async function getObjects(chain, object_ids) {
       throw new Error("Couldn't retrieve objects");
     }
 
-    try {
-      await Apis.close();
-    } catch (error) {
-      console.log({ error, msg: "Error closing connection" });
-    }
+    await closeWSS();
+
     return resolve(retrievedObjects);
   });
 }
@@ -66,17 +70,23 @@ async function getMaxObjectIDs(chain, space_id, type_id) {
   return new Promise(async (resolve, reject) => {
     const _node = chain === "bitshares" ? "wss://node.xbts.io/ws" : "wss://testnet.xbts.io/ws";
 
+    let currentAPI;
     try {
-      await Apis.instance(_node, true, 4000).init_promise;
+      currentAPI = await Apis.instance(
+        _node,
+        true,
+        4000,
+        { enableDatabase: true, enableCrypto: false, enableOrders: true },
+        (error) => console.log({ error })
+      );
     } catch (error) {
-      console.log({ error });
-      reject(error);
-      return;
+      console.log({ error, location: "api instance failed" });
+      return reject(error);
     }
 
     let nextObjectId;
     try {
-      nextObjectId = await Apis.instance()
+      nextObjectId = await currentAPI
         .db_api()
         .exec("get_next_object_id", [space_id, type_id, false]);
     } catch (error) {
@@ -84,11 +94,7 @@ async function getMaxObjectIDs(chain, space_id, type_id) {
       return;
     }
 
-    try {
-      await Apis.close();
-    } catch (error) {
-      console.log({ error, msg: "Error closing connection" });
-    }
+    await closeWSS();
 
     return resolve(parseInt(nextObjectId.split(".")[2]) - 1);
   });
@@ -103,26 +109,27 @@ async function fetchAllAssets(chain) {
 
     let currentAPI;
     try {
-      currentAPI = await Apis.instance(_node, true, 4000).init_promise;
+      currentAPI = await Apis.instance(
+        _node,
+        true,
+        4000,
+        { enableDatabase: true, enableCrypto: false, enableOrders: true },
+        (error) => console.log({ error })
+      );
     } catch (error) {
-      console.log({ error, msg: "instance failed" });
-      reject(error);
-      return;
+      console.log({ error, location: "api instance failed" });
+      return reject(error);
     }
 
     let nextObjectId;
     try {
-      nextObjectId = await Apis.instance().db_api().exec("get_next_object_id", [1, 3, false]);
+      nextObjectId = await currentAPI.db_api().exec("get_next_object_id", [1, 3, false]);
     } catch (error) {
       console.log({ error });
     }
 
     if (!nextObjectId) {
-      try {
-        await Apis.close();
-      } catch (error) {
-        console.log({ error, msg: "Error closing connection" });
-      }
+      await closeWSS();
       return reject("Couldn't get next object ID");
     }
 
@@ -137,7 +144,7 @@ async function fetchAllAssets(chain) {
       const currentChunk = chunksOfInputs[i];
       let got_objects;
       try {
-        got_objects = await Apis.instance().db_api().exec("get_objects", [currentChunk, false]);
+        got_objects = await currentAPI.db_api().exec("get_objects", [currentChunk, false]);
       } catch (error) {
         console.log({ error });
         continue;
@@ -148,17 +155,12 @@ async function fetchAllAssets(chain) {
       }
     }
 
-    try {
-      await Apis.close();
-    } catch (error) {
-      console.log({ error, msg: "Error closing connection" });
-    }
+    await closeWSS();
 
     if (!retrievedObjects || !retrievedObjects.length) {
       return reject("Couldn't retrieve objects");
     }
 
-    Apis.instance().close();
     return resolve(retrievedObjects);
   });
 }
