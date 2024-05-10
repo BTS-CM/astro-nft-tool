@@ -58,7 +58,12 @@ export default function DeepLinkDialog({
         console.log({ error });
       }
 
-      const responseContents = response ? await response.json() : null;
+      let responseContents;
+      try {
+        responseContents = response ? await response.json() : null;
+      } catch (error) {
+        console.log({ error });
+      }
 
       if (responseContents && responseContents.deeplink) {
         setDeeplink(responseContents.deeplink);

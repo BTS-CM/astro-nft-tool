@@ -57,7 +57,11 @@ async function getObjects(chain, object_ids) {
       throw new Error("Couldn't retrieve objects");
     }
 
-    await closeWSS();
+    try {
+      await closeWSS(currentAPI);
+    } catch (error) {
+      console.log({ error, location: "closing wss" });
+    }
 
     return resolve(retrievedObjects);
   });
@@ -94,7 +98,11 @@ async function getMaxObjectIDs(chain, space_id, type_id) {
       return;
     }
 
-    await closeWSS();
+    try {
+      await closeWSS(currentAPI);
+    } catch (error) {
+      console.log({ error, location: "closing wss" });
+    }
 
     return resolve(parseInt(nextObjectId.split(".")[2]) - 1);
   });
@@ -111,7 +119,6 @@ async function fetchAllAssets(chain) {
     try {
       currentAPI = await Apis.instance(
         _node,
-        true,
         4000,
         { enableDatabase: true, enableCrypto: false, enableOrders: true },
         (error) => console.log({ error })
@@ -129,7 +136,11 @@ async function fetchAllAssets(chain) {
     }
 
     if (!nextObjectId) {
-      await closeWSS();
+      try {
+        await closeWSS(currentAPI);
+      } catch (error) {
+        console.log({ error, location: "closing wss" });
+      }
       return reject("Couldn't get next object ID");
     }
 
@@ -155,7 +166,11 @@ async function fetchAllAssets(chain) {
       }
     }
 
-    await closeWSS();
+    try {
+      await closeWSS(currentAPI);
+    } catch (error) {
+      console.log({ error, location: "closing wss" });
+    }
 
     if (!retrievedObjects || !retrievedObjects.length) {
       return reject("Couldn't retrieve objects");

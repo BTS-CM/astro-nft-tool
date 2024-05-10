@@ -52,7 +52,11 @@ export async function GET({ params }: { params: Params }) {
 
   if (!currentAPI.db_api()) {
     console.log("no db_api");
-    await closeWSS(currentAPI);
+    try {
+      await closeWSS(currentAPI);
+    } catch (error) {
+      console.log({ error, location: "closing wss" });
+    }
     return new Response(JSON.stringify({ error: "connection issues" }), {
       status: 500,
       statusText: "Error connecting to blockchain database",
@@ -67,7 +71,11 @@ export async function GET({ params }: { params: Params }) {
   }
 
   if (!fullAccounts || !fullAccounts.length || !fullAccounts[0].length) {
-    await closeWSS(currentAPI);
+    try {
+      await closeWSS(currentAPI);
+    } catch (error) {
+      console.log({ error, location: "closing wss" });
+    }
     return new Response(JSON.stringify({ error: "Invalid account" }), {
       status: 404,
       statusText: "Could not find requested Bitshares account",
@@ -77,7 +85,11 @@ export async function GET({ params }: { params: Params }) {
   let accountAssets = fullAccounts[0][1].assets;
 
   if (!accountAssets || !accountAssets.length) {
-    await closeWSS(currentAPI);
+    try {
+      await closeWSS(currentAPI);
+    } catch (error) {
+      console.log({ error, location: "closing wss" });
+    }
     return new Response(JSON.stringify({ error: "No assets found" }), {
       status: 404,
       statusText: "Could not find any assets for requested Bitshares account",
@@ -101,7 +113,11 @@ export async function GET({ params }: { params: Params }) {
   });
 
   if (!remainingAssets.length && !retrievedAssets.length) {
-    await closeWSS(currentAPI);
+    try {
+      await closeWSS(currentAPI);
+    } catch (error) {
+      console.log({ error, location: "closing wss" });
+    }
     return new Response(JSON.stringify({ error: "No NFT assets found" }), {
       status: 404,
       statusText: "Could not find any NFT assets for requested Bitshares account",
@@ -111,7 +127,11 @@ export async function GET({ params }: { params: Params }) {
   if (!remainingAssets.length) {
     // All assets were cached
     console.log("Returning cached asset data");
-    await closeWSS(currentAPI);
+    try {
+      await closeWSS(currentAPI);
+    } catch (error) {
+      console.log({ error, location: "closing wss" });
+    }
     return new Response(JSON.stringify(retrievedAssets), {
       status: 200,
       headers: {
@@ -135,7 +155,11 @@ export async function GET({ params }: { params: Params }) {
     }
   }
 
-  await closeWSS(currentAPI);
+  try {
+    await closeWSS(currentAPI);
+  } catch (error) {
+    console.log({ error, location: "closing wss" });
+  }
 
   let finalResult = chunkResponses.map((x: any) => {
     const isNFT = x.options.description && JSON.stringify(x).includes("nft_object") ? true : false;

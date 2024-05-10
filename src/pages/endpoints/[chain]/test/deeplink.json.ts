@@ -1,11 +1,11 @@
 interface Params {
-  chain: "bitshares" | "testnet";
+  chain: "bitshares" | "bitshares_testnet";
 }
 
 export async function GET({ params }: { params: Params }) {
   const { chain } = params;
 
-  if (!chain || !["bitshares", "testnet"].includes(chain)) {
+  if (!chain || !["bitshares", "bitshares_testnet"].includes(chain)) {
     return new Response(JSON.stringify({ error: "Invalid account" }), {
       status: 404,
       statusText: "Error fetching Bitshares address",

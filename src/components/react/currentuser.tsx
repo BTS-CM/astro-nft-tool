@@ -28,16 +28,17 @@ export default function CurrentUser() {
   const usr = useSyncExternalStore($currentUser.subscribe, $currentUser.get, $currentUser.get);
 
   const [inView, setInView] = useState<boolean>(false);
-  if (!usr || !usr.id || !usr.id.length) {
-    return null;
-  }
-
   const [open, setOpen] = useState<boolean>(false);
+
   useEffect(() => {
     if (usr && usr.id && usr.id.length) {
       setOpen(false);
     }
   }, [usr]);
+
+  if (!usr || !usr.id || !usr.id.length) {
+    return null;
+  }
 
   return (
     <div className="flex justify-center">

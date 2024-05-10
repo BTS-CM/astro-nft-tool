@@ -39,7 +39,11 @@ export async function GET({ params }: { params: Params }) {
 
   if (!currentAPI.db_api()) {
     console.log("no db_api");
-    await closeWSS(currentAPI);
+    try {
+      await closeWSS(currentAPI);
+    } catch (error) {
+      console.log({ error, location: "closing wss" });
+    }
     return new Response(JSON.stringify({ error: "connection issues" }), {
       status: 500,
       statusText: "Error connecting to blockchain database",
@@ -53,7 +57,11 @@ export async function GET({ params }: { params: Params }) {
     console.log({ error });
   }
 
-  await closeWSS(currentAPI);
+  try {
+    await closeWSS(currentAPI);
+  } catch (error) {
+    console.log({ error, location: "closing wss" });
+  }
 
   if (!object || !object.length) {
     return new Response(JSON.stringify({ error: "Invalid asset" }), {

@@ -13,9 +13,7 @@ class GrapheneApi {
     const self = this;
     let response;
     try {
-      response = await this.ws_rpc.call([1, this.api_name, []]).catch((error) => {
-        console.log({ error });
-      });
+      response = await this.ws_rpc.call([1, this.api_name, []]);
     } catch (error) {
       console.log({ error });
     }

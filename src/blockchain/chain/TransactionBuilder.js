@@ -138,7 +138,6 @@ class TransactionBuilder {
             .db_api()
             .exec("get_objects", [["2.1.0"]])
             .then((response) => {
-              console.log({ response });
               head_block_time_string = response[0].time;
               if (this.expiration === 0) {
                 this.expiration = base_expiration_sec() + ChainConfig.expire_in_secs;
