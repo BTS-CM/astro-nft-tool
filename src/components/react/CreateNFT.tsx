@@ -275,27 +275,39 @@ export default function SelectedIssuedAsset() {
       setCerQuoteAmount(options.core_exchange_rate.quote.amount);
       setCerQuoteAssetId(options.core_exchange_rate.quote.asset_id);
 
-      let permissionBooleans =
-        options && options.issuer_permissions
-          ? getFlagBooleans(options.issuer_permissions)
-          : {
-              charge_market_fee: true,
-              white_list: true,
-              override_authority: true,
-              transfer_restricted: true,
-              disable_confidential: true,
-            };
+      let permissionBooleans;
+      if (options && !options.issuer_permissions) {
+        permissionBooleans = {
+          charge_market_fee: false,
+          white_list: false,
+          override_authority: false,
+          transfer_restricted: false,
+          disable_confidential: false,
+        };
+      } else if (options && options.issuer_permissions) {
+        permissionBooleans = getFlagBooleans(options.issuer_permissions);
+      } else {
+        permissionBooleans = {
+          charge_market_fee: true,
+          white_list: true,
+          override_authority: true,
+          transfer_restricted: true,
+          disable_confidential: true,
+        };
+      }
 
-      let flagBooleans =
-        options && options.flags
-          ? getFlagBooleans(options.flags)
-          : {
-              charge_market_fee: false,
-              white_list: false,
-              override_authority: false,
-              transfer_restricted: false,
-              disable_confidential: false,
-            };
+      let flagBooleans;
+      if (!options || options && !options.flags) {
+        flagBooleans = {
+          charge_market_fee: false,
+          white_list: false,
+          override_authority: false,
+          transfer_restricted: false,
+          disable_confidential: false,
+        };
+      } else if (options && options.flags) {
+        flagBooleans = getFlagBooleans(options.flags);
+      }
 
       setPermChargeMarketFee(permissionBooleans.charge_market_fee || false);
       setPermWhiteList(permissionBooleans.white_list || false);
@@ -1054,13 +1066,17 @@ export default function SelectedIssuedAsset() {
                             whitelist_markets: [],
                             blacklist_markets: [],
                             description,
+                            /*
                             extensions: {
                               reward_percent: 0,
                               whitelist_market_fee_sharing: [],
                             },
+                            */
+                           extensions: {}
                           },
                           is_prediction_market: false,
-                          extensions: null,
+                          //extensions: null,
+                          extensions: [],
                         },
                       ]
                     : [
@@ -1089,13 +1105,17 @@ export default function SelectedIssuedAsset() {
                             whitelist_markets: [],
                             blacklist_markets: [],
                             description,
+                            /*
                             extensions: {
                               reward_percent: 0,
                               whitelist_market_fee_sharing: [],
                             },
+                            */
+                           extensions: {}
                           },
                           is_prediction_market: false,
-                          extensions: null,
+                          //extensions: null,
+                          extensions: [],
                         },
                       ]
                 );

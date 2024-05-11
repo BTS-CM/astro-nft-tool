@@ -89,6 +89,15 @@ async function generateDeepLink(chain: string, opType: string, operations: objec
       return;
     }
 
+    /*
+    try {
+      tr.add_signer("inject_wif");
+    } catch (error) {
+      console.error(error);
+      return reject(error);
+    }
+    */
+
     try {
       tr.finalize(currentAPI);
     } catch (error) {
