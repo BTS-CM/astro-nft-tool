@@ -1,10 +1,10 @@
-import Apis from "@/blockchain/ws/ApiInstances";
-import { closeWSS } from "@/lib/common.js";
+import Apis from "../blockchain/ws/ApiInstances.ts";
+import { closeWSS } from "../lib/common.ts";
 
 /**
  * Split an array into array chunks
  */
-function _sliceIntoChunks(arr, size) {
+function _sliceIntoChunks(arr: any[], size: number) {
   const chunks = [];
   for (let i = 0; i < arr.length; i += size) {
     const chunk = arr.slice(i, i + size);
@@ -16,7 +16,7 @@ function _sliceIntoChunks(arr, size) {
 /**
  * Get multiple objects such as accounts, assets, etc
  */
-async function getObjects(chain, object_ids) {
+async function getObjects(chain: string, object_ids: string[]): Promise<any[]> {
   return new Promise(async (resolve, reject) => {
     const _node = chain === "bitshares" ? "wss://node.xbts.io/ws" : "wss://testnet.xbts.io/ws";
 
@@ -27,7 +27,7 @@ async function getObjects(chain, object_ids) {
         true,
         4000,
         { enableDatabase: true, enableCrypto: false, enableOrders: false },
-        (error) => console.log({ error })
+        (error: any) => console.log({ error })
       );
     } catch (error) {
       console.log({ error, msg: "instance failed" });
@@ -35,7 +35,7 @@ async function getObjects(chain, object_ids) {
       return;
     }
 
-    let retrievedObjects = [];
+    let retrievedObjects: any[] = [];
     const chunksOfInputs = _sliceIntoChunks(object_ids, chain === "bitshares" ? 50 : 10);
 
     for (let i = 0; i < chunksOfInputs.length; i++) {
@@ -49,7 +49,7 @@ async function getObjects(chain, object_ids) {
       }
 
       if (got_objects && got_objects.length) {
-        retrievedObjects = retrievedObjects.concat(got_objects.filter((x) => x !== null));
+        retrievedObjects = retrievedObjects.concat(got_objects.filter((x: any) => x !== null));
       }
     }
 
@@ -70,7 +70,7 @@ async function getObjects(chain, object_ids) {
 /**
  * Get the latest ID for an object in the blockchain
  */
-async function getMaxObjectIDs(chain, space_id, type_id) {
+async function getMaxObjectIDs(chain: string, space_id: any, type_id: any) {
   return new Promise(async (resolve, reject) => {
     const _node = chain === "bitshares" ? "wss://node.xbts.io/ws" : "wss://testnet.xbts.io/ws";
 
@@ -81,7 +81,7 @@ async function getMaxObjectIDs(chain, space_id, type_id) {
         true,
         4000,
         { enableDatabase: true, enableCrypto: false, enableOrders: true },
-        (error) => console.log({ error })
+        (error: any) => console.log({ error })
       );
     } catch (error) {
       console.log({ error, location: "api instance failed" });
@@ -111,7 +111,7 @@ async function getMaxObjectIDs(chain, space_id, type_id) {
 /**
  * Get multiple objects such as accounts, assets, etc
  */
-async function fetchAllAssets(chain) {
+async function fetchAllAssets(chain: string): Promise<any[]> {
   return new Promise(async (resolve, reject) => {
     const _node = chain === "bitshares" ? "wss://node.xbts.io/ws" : "wss://testnet.xbts.io/ws";
 
@@ -119,9 +119,10 @@ async function fetchAllAssets(chain) {
     try {
       currentAPI = await Apis.instance(
         _node,
+        true,
         4000,
         { enableDatabase: true, enableCrypto: false, enableOrders: true },
-        (error) => console.log({ error })
+        (error: any) => console.log({ error })
       );
     } catch (error) {
       console.log({ error, location: "api instance failed" });
@@ -148,7 +149,7 @@ async function fetchAllAssets(chain) {
 
     let objectIds = Array.from({ length: maxObjectId }, (_, i) => `1.3.${i}`);
 
-    let retrievedObjects = [];
+    let retrievedObjects: any[] = [];
     const chunksOfInputs = _sliceIntoChunks(objectIds, chain === "bitshares" ? 50 : 10);
 
     for (let i = 0; i < chunksOfInputs.length; i++) {
@@ -162,7 +163,7 @@ async function fetchAllAssets(chain) {
       }
 
       if (got_objects && got_objects.length) {
-        retrievedObjects = retrievedObjects.concat(got_objects.filter((x) => x !== null));
+        retrievedObjects = retrievedObjects.concat(got_objects.filter((x: any) => x !== null));
       }
     }
 

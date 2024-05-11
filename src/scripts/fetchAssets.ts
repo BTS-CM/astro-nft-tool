@@ -1,16 +1,39 @@
 import fs from "fs";
 import { fetchAllAssets } from "./common.js";
 
-const chains = ["bitshares", "bitshares_testnet"];
+interface Asset {
+  id: string;
+  symbol: string;
+  issuer: string;
+  options: {
+    description: string;
+  };
+}
 
-const getAllAssetData = async (chain) => {
-  const allData = [];
+interface MappedResponse {
+  id: string;
+  symbol: string;
+  issuer: string;
+  isNFT: boolean;
+}
+
+interface MinAssetInfo {
+  x: string;
+  s: string;
+  i: string;
+  y: boolean;
+}
+
+const chains: string[] = ["bitshares", "bitshares_testnet"];
+
+const getAllAssetData = async (chain: string): Promise<MappedResponse[] | undefined> => {
+  const allData: MappedResponse[] = [];
 
   if (fs.existsSync(`./src/data/${chain}/allAssets.json`)) {
     return;
   }
 
-  let assetData;
+  let assetData: Asset[];
   try {
     assetData = await fetchAllAssets(chain);
   } catch (error) {
@@ -20,11 +43,11 @@ const getAllAssetData = async (chain) => {
   }
 
   allData.push(
-    ...assetData.map((asset) => {
-      const isNFT =
+    ...assetData.map((asset: Asset) => {
+      const isNFT: boolean =
         asset.options.description && JSON.stringify(asset).includes("nft_object") ? true : false;
 
-      const mappedResponse = {
+      const mappedResponse: MappedResponse = {
         id: asset.id,
         symbol: asset.symbol,
         issuer: asset.issuer,
@@ -38,7 +61,12 @@ const getAllAssetData = async (chain) => {
   return allData;
 };
 
-function writeToFile(data, chain, fileName, prettyPrint = true) {
+function writeToFile(
+  data: MappedResponse[] | MinAssetInfo[],
+  chain: string,
+  fileName: string,
+  prettyPrint: boolean = true
+): void {
   console.log(`Writing to ./src/data/${chain}/${fileName}.json`);
   fs.writeFileSync(
     `./src/data/${chain}/${fileName}.json`,
@@ -46,7 +74,7 @@ function writeToFile(data, chain, fileName, prettyPrint = true) {
   );
 }
 
-const main = async () => {
+const main = async (): Promise<void> => {
   for (const chain of chains) {
     const allData = await getAllAssetData(chain);
 
@@ -57,7 +85,7 @@ const main = async () => {
 
     if (allData) {
       writeToFile(allData, chain, "allAssets");
-      const minimumAssetInfo = allData.map((asset) => {
+      const minimumAssetInfo: MinAssetInfo[] = allData.map((asset: MappedResponse) => {
         return {
           x: asset.id.replace("1.3.", ""),
           s: asset.symbol,

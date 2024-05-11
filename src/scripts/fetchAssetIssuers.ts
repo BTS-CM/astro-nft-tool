@@ -1,9 +1,9 @@
 import fs from "fs";
-import { getObjects } from "./common.js";
+import { getObjects } from "./common.ts";
 
 const chains = ["bitshares", "bitshares_testnet"];
 
-function writeToFile(data, chain, fileName) {
+function writeToFile(data: object, chain: string, fileName: string) {
   console.log(`Writing to ./src/data/${chain}/${fileName}.json`);
   fs.writeFileSync(`./src/data/${chain}/${fileName}.json`, JSON.stringify(data));
 }
@@ -15,10 +15,13 @@ const main = async () => {
       continue;
     }
 
-    const minData = JSON.parse(fs.readFileSync(`./src/data/${chain}/minAssets.json`));
-    const objectIds = [...new Set(minData.map((asset) => `1.2.${asset.i}`))];
+    const minData = JSON.parse(fs.readFileSync(`./src/data/${chain}/minAssets.json`).toString());
 
-    let assetIssuers;
+    const objectIds: string[] = Array.from(
+      new Set(minData.map((asset: any) => `1.2.${asset.i}`))
+    ) as string[];
+
+    let assetIssuers: any[];
     try {
       assetIssuers = await getObjects(chain, objectIds);
     } catch (error) {
@@ -33,13 +36,13 @@ const main = async () => {
       };
     });
 
-    let finalData = minData.map((asset) => {
+    let finalData = minData.map((asset: any) => {
       const issuer = parsedIssuerResponse.find((issuer) => issuer.id === `1.2.${asset.i}`);
       return {
         x: asset.x,
         s: asset.s,
         i: asset.i,
-        n: issuer.name,
+        n: issuer && issuer.name ? issuer.name : "Unknown",
         y: asset.y,
       };
     });

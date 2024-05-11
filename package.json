@@ -9,8 +9,8 @@
     "build": "astro check && astro build",
     "preview": "astro build && astro preview",
     "eraseData": "rm -rf ./src/data/bitshares/* && rm -rf ./src/data/bitshares_testnet/*",
-    "fetchAssets": "node ./src/scripts/fetchAssets.js",
-    "fetchIssuers": "node ./src/scripts/fetchAssetIssuers.js"
+    "fetchAssets": "bun run ./src/scripts/fetchAssets.js",
+    "fetchIssuers": "bun run ./src/scripts/fetchAssetIssuers.js"
   },
   "dependencies": {
     "@astrojs/check": "^0.6.0",
