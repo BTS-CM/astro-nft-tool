@@ -11,7 +11,7 @@ import Header from "@/components/astro/header.astro";
 import Footer from "@/components/astro/footer.astro";
 
 import { 
-	RocketIcon, PlusCircledIcon, ScissorsIcon, QuestionMarkCircledIcon
+	RocketIcon, PlusCircledIcon, MagnifyingGlassIcon, QuestionMarkCircledIcon, ExternalLinkIcon
 } from "@radix-ui/react-icons";
 
 ---
@@ -40,20 +40,20 @@ import {
 				</a>
 			</div>
 			<div class="col-span-1">
-				<a href="/edit">
+				<a href="/lookup">
 					<Card className="mt-3 md:ml-2">
 						<CardHeader>
 						  <CardTitle>
 							<span class="flex">
 								<span class="flex-shrink">
-									<ScissorsIcon className="w-6 h-6 mr-3" />
+									<MagnifyingGlassIcon className="w-6 h-6 mr-3" />
 								</span>
 								<span class="flex-auto">
-									Edit an existing NFT
+									Lookup your existing NFTs
 								</span>
 							</span>
 							</CardTitle>
-						  <CardDescription>Edit and existing NFT on the Bitshares blockchain</CardDescription>
+						  <CardDescription>Select an existing NFT of yours to issue or edit</CardDescription>
 						</CardHeader>
 					</Card>
 				</a>
@@ -92,6 +92,25 @@ import {
 							</span>
 						</CardTitle>
 						  <CardDescription>Do you want to know more?</CardDescription>
+						</CardHeader>
+					</Card>
+				</a>
+			</div>
+			<div class="col-span-1">
+				<a href="/webring">
+					<Card className="mt-3 mr-3">
+						<CardHeader>
+						  <CardTitle>
+							<span class="flex">
+								<span class="flex-shrink">
+									<ExternalLinkIcon className="w-6 h-6 mr-3" />
+								</span>
+								<span class="flex-auto">
+									Webring
+								</span>
+							</span>
+						</CardTitle>
+						  <CardDescription>Interested in similar websites/tools? Find out more!</CardDescription>
 						</CardHeader>
 					</Card>
 				</a>

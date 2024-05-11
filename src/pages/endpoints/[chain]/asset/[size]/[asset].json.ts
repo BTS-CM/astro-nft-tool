@@ -4,12 +4,13 @@ import { closeWSS } from "@/lib/common.js";
 interface Params {
   asset: string;
   chain: string;
+  size: string;
 }
 
 let asset_regex = /\b\d+\.\d+\.(\d+)\b/;
 
 export async function GET({ params }: { params: Params }) {
-  const { asset, chain } = params;
+  const { asset, chain, size } = params;
 
   if (asset.match(asset_regex)) {
     return new Response(JSON.stringify({ error: "Invalid asset" }), {
@@ -63,17 +64,29 @@ export async function GET({ params }: { params: Params }) {
     console.log({ error, location: "closing wss" });
   }
 
-  if (!object || !object.length) {
+  if (!object || !object.length || !object[0]) {
     return new Response(JSON.stringify({ error: "Invalid asset" }), {
       status: 404,
       statusText: "Error fetching Bitshares address",
     });
   }
 
-  return new Response(JSON.stringify(object[0]), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  return new Response(
+    JSON.stringify(
+      size === "max"
+        ? object[0]
+        : {
+            symbol: object[0].symbol,
+            id: object[0].id,
+            issuer: object[0].issuer,
+            precision: object[0].precision,
+          }
+    ),
+    {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 }

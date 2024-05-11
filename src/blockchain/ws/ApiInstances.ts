@@ -25,6 +25,7 @@ type ApiObject = {
   init_promise?: Promise<any>;
   chain_id?: string;
   closeCb?: any;
+  [key: string]: any;
 };
 
 type ApiInstance = {
@@ -123,6 +124,9 @@ const newApis = (): ApiInstance => {
         const initPromises = [];
         if (currentOptionalApis.enableDatabase) {
           const db_promise = initApi("_db", "database").then(() => {
+            if (!Api._db) {
+              throw new Error("Api._db is not initialized");
+            }
             return Api._db.exec("get_chain_id", []).then((_chain_id: string) => {
               Api.chain_id = _chain_id;
               return ChainConfig.setChainId(_chain_id);
@@ -211,7 +215,7 @@ const newApis = (): ApiInstance => {
     new Proxy([], {
       get:
         (_, method) =>
-        (...args) =>
+        (...args: any) =>
           Api[name].exec(method, [...args]),
     });
 

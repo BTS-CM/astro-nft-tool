@@ -1,0 +1,162 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import { Button } from "@/components/ui/button";
+
+import Header from "@/components/astro/header.astro";
+import Footer from "@/components/astro/footer.astro";
+---
+
+<Layout title="Bitshares Astro NFT Tool - About">
+	<main>
+		<Header />
+		<div class="grid grid-cols-1 mt-5">
+			<div class="col-span-1">
+				<Card>
+					<CardHeader>
+						<CardTitle>Bitshares Astro NFT tool's webring</CardTitle>
+						<CardDescription>
+							Trusted 3rd party Bitshares resources, give them a visit!
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<h4 class="scroll-m-20 text-xl font-semibold tracking-tight mb-2">
+							Bitshares wallets compatible with this NFT tool
+						</h4>
+
+						<a href="https://github.com/bitshares/beet">
+							<Button>
+								Bitshares BEET
+							</Button>
+						</a>
+
+						<a href="https://github.com/beetapp/beeteos">
+							<Button>
+								BeetEOS
+							</Button>
+						</a>
+
+						<h4 class="scroll-m-20 text-xl font-semibold tracking-tight mt-2 mb-2">
+							Bitshares NFT Galleries
+						</h4>
+						
+						<a href="https://nftea.gallery/gallery">
+							<Button>
+								NFTEA Gallery
+							</Button>
+						</a>
+						<a href="https://artcasa.gallery/">
+							<Button>
+								Artcasa
+							</Button>
+						</a>
+						<a href="https://github.com/BTS-CM/NFT_Viewer">
+							<Button>
+								Bitshares NFT Viewer
+							</Button>
+						</a>
+						<a href="https://github.com/BTS-CM/NFT.next.js">
+							<Button>
+								Next.JS gallery template
+							</Button>
+						</a>
+
+						<h4 class="scroll-m-20 text-xl font-semibold tracking-tight mt-2 mb-2">
+							Bitshares NFT tools
+						</h4>
+
+						<a href="https://github.com/BTS-CM/Bitshares_NFT_Issuance_Tool">
+							<Button>
+								Bitshares NFT Issuance Tool
+							</Button>
+						</a>
+
+						<a href="https://github.com/Bit20-Creative-Group/BitShares-NFT-Creator">
+							<Button>
+								Bitshares NFT Creator
+							</Button>
+						</a>
+
+						<a href="https://github.com/BTS-CM/airdrop_tool">
+							<Button>
+								Bitshares Airdrop Tool
+							</Button>
+						</a>
+
+						<h4 class="scroll-m-20 text-xl font-semibold tracking-tight mt-2 mb-2">
+							Bitshares blockchain explorers
+						</h4>
+
+						<a href="https://bts.exchange/#/explorer/assets?r=nftprofessional1">
+							<Button>
+								BTS.Exchange
+							</Button>
+						</a>
+
+						<a href="https://ex.xbts.io/explorer/assets?r=nftprofessional1">
+							<Button>
+								XBTS.io
+							</Button>
+						</a>
+
+						<a href="https://api.bitshares.ws/docs">
+							<Button>
+								Bitshares insight API
+							</Button>
+						</a>
+
+						<a href="https://blocksights.info/">
+							<Button>
+								Blocksights.info
+							</Button>
+						</a>
+
+						<a href="https://kibana.bts.mobi/app/dashboards#/view/c767fb10-5c58-11eb-a22a-3fca5c3996eb">
+							<Button>
+								Kibana (bts.mobi)
+							</Button>
+						</a>
+
+						<h4 class="scroll-m-20 text-xl font-semibold tracking-tight mt-2 mb-2">
+							Bitshares reference wallets
+						</h4>
+
+						<a href="https://ex.xbts.io/create-account?r=nftprofessional1">
+							<Button>
+								XBTS.io
+							</Button>
+						</a>
+
+						<a href="https://github.com/bitshares/bitshares-ui/releases">
+							<Button>
+								Light desktop client
+							</Button>
+						</a>
+					</CardContent>
+				</Card>
+			</div>
+		</div>
+		<Footer />
+	</main>
+</Layout>
+
+<style>
+	main {
+		margin: auto;
+		padding: 1rem;
+		width: 900px;
+		max-width: calc(100% - 2rem);
+		color: white;
+		font-size: 20px;
+		line-height: 1.6;
+		min-height: 100%;
+		height: 100%;
+	}
+</style>

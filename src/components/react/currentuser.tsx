@@ -23,9 +23,11 @@ import {
 
 import AccountSelect from "@/components/react/AccountSelect";
 import { Avatar } from "@/components/react/Avatar";
+import { useInitCache } from "@/effects/Init.ts";
 
 export default function CurrentUser() {
   const usr = useSyncExternalStore($currentUser.subscribe, $currentUser.get, $currentUser.get);
+  useInitCache();
 
   const [inView, setInView] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
@@ -36,9 +38,7 @@ export default function CurrentUser() {
     }
   }, [usr]);
 
-  if (!usr || !usr.id || !usr.id.length) {
-    return null;
-  }
+
 
   return (
     <div className="flex justify-center">

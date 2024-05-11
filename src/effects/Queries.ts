@@ -4,7 +4,10 @@ const [createAssetStore] = nanoquery({
   fetcher: async (...args: unknown[]) => {
     const chain = args[0] as string;
     const assetID = args[1] as string;
-    return fetch(`/endpoints/${chain}/asset/${assetID}.json`).then((response) => response.json());
+    const size = args[2] as string;
+    return fetch(
+      `/endpoints/${chain}/asset/${size === "min" ? "min" : "max"}/${assetID.toUpperCase()}.json`
+    ).then((response) => response.json());
   },
 });
 
@@ -16,4 +19,14 @@ const [createIssuedAssetStore] = nanoquery({
   },
 });
 
-export { createAssetStore, createIssuedAssetStore };
+const [createAccountStore] = nanoquery({
+  fetcher: async (...args: unknown[]) => {
+    const chain = args[0] as string;
+    const username = args[1] as string;
+    return fetch(`/endpoints/${chain}/account/${username}.json`).then((response) =>
+      response.json()
+    );
+  },
+});
+
+export { createAssetStore, createIssuedAssetStore, createAccountStore };

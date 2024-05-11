@@ -169,7 +169,7 @@ function _failure(location: string = "invalid request") {
   );
 }
 
-export async function POST({ request }) {
+export async function POST({ request }: { request: any }) {
   if (request.headers.get("Content-Type") === "application/json") {
     let body;
     try {

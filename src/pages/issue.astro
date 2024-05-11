@@ -10,26 +10,21 @@ import {
 
 import Header from "@/components/astro/header.astro";
 import Footer from "@/components/astro/footer.astro";
+import IssueAsset from "@/components/react/IssueAsset.tsx";
 ---
 
-<Layout title="Bitshares Astro NFT Tool - About">
+<Layout title="Bitshares Astro NFT Tool - Issue NFT">
 	<main>
 		<Header />
 		<div class="grid grid-cols-1 mt-5">
 			<div class="col-span-1">
 				<Card>
 					<CardHeader>
-						<CardTitle>🧾 About this nft tool</CardTitle>
-						<CardDescription>Do you want to know more?</CardDescription>
+						<CardTitle>NFT Issuance form</CardTitle>
+						<CardDescription>In order to trade/transfer an NFT, you must first issue it into existence.</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<p class="leading-6">
-							1
-						</p>
-
-						<p class="leading-6 mt-3">
-							2
-						</p>
+						<IssueAsset client:only="react" />
 					</CardContent>
 				</Card>
 			</div>

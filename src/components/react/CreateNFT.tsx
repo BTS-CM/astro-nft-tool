@@ -39,7 +39,6 @@ import {
 } from "@/components/ui/dialog";
 
 import { $currentUser } from "@/stores/users.ts";
-import { useInitCache } from "@/effects/Init.ts";
 import { createAssetStore } from "@/effects/Queries.ts";
 import { getPermissions, getFlags, getFlagBooleans } from "@/lib/permissions.ts";
 
@@ -153,8 +152,6 @@ function getImages(nft_object: NFTObject): NFTMEDIA[] {
 export default function SelectedIssuedAsset() {
   const usr = useSyncExternalStore($currentUser.subscribe, $currentUser.get, $currentUser.get);
 
-  useInitCache();
-
   const [existingNFT, setExistingNFT] = useState<string>();
   useEffect(() => {
     async function parseUrlParams() {
@@ -174,7 +171,7 @@ export default function SelectedIssuedAsset() {
   useEffect(() => {
     if (!usr || !usr.chain || !existingNFT) return;
 
-    const assetStore = createAssetStore([usr.chain, existingNFT]);
+    const assetStore = createAssetStore([usr.chain, existingNFT, "max"]);
 
     const unsub = assetStore.subscribe((result) => {
       if (result.error) {
@@ -297,7 +294,7 @@ export default function SelectedIssuedAsset() {
       }
 
       let flagBooleans;
-      if (!options || options && !options.flags) {
+      if (!options || (options && !options.flags)) {
         flagBooleans = {
           charge_market_fee: false,
           white_list: false,
@@ -335,11 +332,11 @@ export default function SelectedIssuedAsset() {
         setDisabledDisableConfidential(true);
       }
 
-      setFlagChargeMarketFee(flagBooleans.charge_market_fee || false);
-      setFlagWhiteList(flagBooleans.white_list || false);
-      setFlagOverrideAuthority(flagBooleans.override_authority || false);
-      setFlagTransferRestricted(flagBooleans.transfer_restricted || false);
-      setFlagDisableConfidential(flagBooleans.disable_confidential || false);
+      setFlagChargeMarketFee((flagBooleans && flagBooleans.charge_market_fee) || false);
+      setFlagWhiteList((flagBooleans && flagBooleans.white_list) || false);
+      setFlagOverrideAuthority((flagBooleans && flagBooleans.override_authority) || false);
+      setFlagTransferRestricted((flagBooleans && flagBooleans.transfer_restricted) || false);
+      setFlagDisableConfidential((flagBooleans && flagBooleans.disable_confidential) || false);
 
       if (nft_object) {
         //const blah: NFTMEDIA[] = getImages(nft_object);
@@ -1072,7 +1069,7 @@ export default function SelectedIssuedAsset() {
                               whitelist_market_fee_sharing: [],
                             },
                             */
-                           extensions: {}
+                            extensions: {},
                           },
                           is_prediction_market: false,
                           //extensions: null,
@@ -1111,7 +1108,7 @@ export default function SelectedIssuedAsset() {
                               whitelist_market_fee_sharing: [],
                             },
                             */
-                           extensions: {}
+                            extensions: {},
                           },
                           is_prediction_market: false,
                           //extensions: null,

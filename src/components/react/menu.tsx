@@ -33,9 +33,10 @@ export default function Menu() {
             <CommandGroup heading={"Bitshares Astro NFT tool"}>
               <MenuRow url="/" text="Homepage" icon="🏠" />
               <MenuRow url="/create" text="Create an NFT" icon="➕" />
-              <MenuRow url="/edit" text="Edit an NFT" icon="✂️" />
+              <MenuRow url="/lookup" text="Lookup NFTs" icon="🔎" />
               <MenuRow url="/issue" text="Issue an NFT" icon="🚀" />
               <MenuRow url="/about" text="About" icon="❔" />
+              <MenuRow url="/webring" text="Webring" icon="🔗" />
             </CommandGroup>
           </CommandList>
         </Command>

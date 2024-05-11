@@ -134,7 +134,9 @@ export default function AccountSelect() {
           <HoverCardTrigger asChild>
             <Card
               onClick={() => {
-                setCurrentUser(res.username, res.id, res.referrer, res.chain);
+                if (res.username && res.id && res.referrer && res.chain) {
+                  setCurrentUser(res.username, res.id, res.referrer, res.chain);
+                }
               }}
             >
               <div className="grid grid-cols-4">
@@ -174,7 +176,9 @@ export default function AccountSelect() {
               className="w-full mt-2 text-bold text-white"
               variant="destructive"
               onClick={() => {
-                removeUser(res.id);
+                if (res.id) {
+                  removeUser(res.id);
+                }
               }}
             >
               Forget this account

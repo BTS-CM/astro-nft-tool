@@ -22,8 +22,6 @@ let account_regex = /\b\d+\.\d+\.(\d+)\b/;
 
 export async function GET({ params }: { params: Params }) {
   const { account, chain } = params;
-  let _APIs = Apis;
-
   if (account.match(account_regex)) {
     return new Response(JSON.stringify({ error: "Invalid account" }), {
       status: 404,

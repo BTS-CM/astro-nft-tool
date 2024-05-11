@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 
 interface ExternalLinkProps {
   hyperlink: string;
-  type: "string" | "button";
+  type: "text" | "button";
   text: string;
   variant:
     | "link"
