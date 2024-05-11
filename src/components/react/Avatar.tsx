@@ -270,7 +270,7 @@ export const Avatar = ({
     return () => clearInterval(interval);
   }, [isIdle]);
 
-  const [timeoutTimer, setTimeoutTimer] = useState<number>();
+  const [timeoutTimer, setTimeoutTimer] = useState<NodeJS.Timeout | undefined>();
   useEffect(() => {
     function handleIdle() {
       setIsIdle(true);
