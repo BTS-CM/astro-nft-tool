@@ -12,6 +12,10 @@ For windows, use the [windows linux subsystem](https://learn.microsoft.com/en-us
 
 `bun install`
 
+`bun run fetchAssets`
+
+`bun run fetchIssuers`
+
 `bun run dev`
 
 `bun run build`

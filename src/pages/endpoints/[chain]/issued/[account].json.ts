@@ -101,6 +101,8 @@ export async function GET({ params }: { params: Params }) {
       id: "1.3." + asset.x,
       symbol: asset.s,
       isNFT: asset.y,
+      issuer: "1.2." + asset.i,
+      precision: asset.p,
     };
   });
 
@@ -164,6 +166,8 @@ export async function GET({ params }: { params: Params }) {
     return {
       id: x.id,
       symbol: x.symbol,
+      precision: x.precision,
+      issuer: x.issuer,
       isNFT: isNFT,
     };
   });
@@ -175,11 +179,10 @@ export async function GET({ params }: { params: Params }) {
   console.log("Returning retrieved asset data");
   return new Response(
     JSON.stringify(
-      finalResult
-        .filter((x) => x.isNFT)
-        .map((x) => {
-          return { id: x.id, symbol: x.symbol };
-        })
+      finalResult.filter((x) => x.isNFT)
+      //.map((x) => {
+      //  return { id: x.id, symbol: x.symbol };
+      //})
     ),
     {
       status: 200,

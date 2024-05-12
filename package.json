@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "eraseData": "rm -rf ./src/data/bitshares/* && rm -rf ./src/data/bitshares_testnet/*",
+    "eraseData": "rm -rf ./src/data/bitshares/*.json && rm -rf ./src/data/bitshares_testnet/*.json",
     "fetchAssets": "bun run ./src/scripts/fetchAssets.js",
     "fetchIssuers": "bun run ./src/scripts/fetchAssetIssuers.js",
     "prebuild": "bun run fetchAssets && bun run fetchIssuers",

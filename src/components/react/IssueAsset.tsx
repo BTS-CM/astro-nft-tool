@@ -184,7 +184,7 @@ export default function IssueAsset() {
               <Input
                 id="account"
                 placeholder="Account"
-                value={usr && usr.id ? usr.id : "???"}
+                value={usr && usr.id && usr.username ? `${usr.username} (${usr.id})` : "???"}
                 type="text"
                 readOnly
                 disabled
@@ -227,7 +227,12 @@ export default function IssueAsset() {
               {response && response.length && !chosen ? (
                 <>
                   <Label>Choose from one of your issued NFTs</Label>
-                  <Select onValueChange={(res) => setChosen(response.find((x) => x.id === res))}>
+                  <Select
+                    onValueChange={(res) => {
+                      setChosen(response.find((x) => x.id === res));
+                      console.log({ result: response.find((x) => x.id === res), response });
+                    }}
+                  >
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Select an NFT" />
                     </SelectTrigger>

@@ -44,6 +44,7 @@ const main = async () => {
         i: asset.i,
         n: issuer && issuer.name ? issuer.name : "Unknown",
         y: asset.y,
+        p: asset.p,
       };
     });
 

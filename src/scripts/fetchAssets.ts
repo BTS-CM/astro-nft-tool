@@ -5,6 +5,7 @@ interface Asset {
   id: string;
   symbol: string;
   issuer: string;
+  precision: number;
   options: {
     description: string;
   };
@@ -14,6 +15,7 @@ interface MappedResponse {
   id: string;
   symbol: string;
   issuer: string;
+  precision: number;
   isNFT: boolean;
 }
 
@@ -21,6 +23,7 @@ interface MinAssetInfo {
   x: string;
   s: string;
   i: string;
+  p: number;
   y: boolean;
 }
 
@@ -51,6 +54,7 @@ const getAllAssetData = async (chain: string): Promise<MappedResponse[] | undefi
         id: asset.id,
         symbol: asset.symbol,
         issuer: asset.issuer,
+        precision: asset.precision,
         isNFT: isNFT,
       };
 
@@ -90,6 +94,7 @@ const main = async (): Promise<void> => {
           x: asset.id.replace("1.3.", ""),
           s: asset.symbol,
           i: asset.issuer.replace("1.2.", ""),
+          p: asset.precision,
           y: asset.isNFT,
         };
       });
