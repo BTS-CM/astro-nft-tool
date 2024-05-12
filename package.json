@@ -3,14 +3,14 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "prebuild": "npm run fetchAssets && npm run fetchIssuers",
+    "eraseData": "rm -rf ./src/data/bitshares/* && rm -rf ./src/data/bitshares_testnet/*",
+    "fetchAssets": "bun run ./src/scripts/fetchAssets.js",
+    "fetchIssuers": "bun run ./src/scripts/fetchAssetIssuers.js",
+    "prebuild": "bun run fetchAssets && bun run fetchIssuers",
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
-    "preview": "astro build && astro preview",
-    "eraseData": "rm -rf ./src/data/bitshares/* && rm -rf ./src/data/bitshares_testnet/*",
-    "fetchAssets": "bun run ./src/scripts/fetchAssets.js",
-    "fetchIssuers": "bun run ./src/scripts/fetchAssetIssuers.js"
+    "preview": "astro build && astro preview"
   },
   "dependencies": {
     "@astrojs/check": "^0.6.0",

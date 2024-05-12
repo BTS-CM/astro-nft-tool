@@ -21,14 +21,14 @@ export default function AssetFlag({
   setFlag,
 }: Props) {
   const lbl = (
-    <Label htmlFor={id}>{permission || alreadyDisabled ? allowedText : disabledText}</Label>
+    <Label htmlFor={id}>{permission || alreadyDisabled || flag ? allowedText : disabledText}</Label>
   );
 
   if (alreadyDisabled || !permission) {
     return (
       <>
         <Checkbox checked={false} id={id} className="align-middle mr-2" disabled />
-        {lbl}
+        <Label htmlFor={id}>{disabledText}</Label>
         <br />
       </>
     );
@@ -46,7 +46,7 @@ export default function AssetFlag({
         className="align-middle mr-2"
         checked={flag}
       />
-      {lbl}
+      <Label htmlFor={id}>{flag ? allowedText : disabledText}</Label>
       <br />
     </>
   );

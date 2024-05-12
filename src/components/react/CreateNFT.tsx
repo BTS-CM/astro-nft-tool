@@ -42,6 +42,26 @@ import { $currentUser } from "@/stores/users.ts";
 import { createAssetStore } from "@/effects/Queries.ts";
 import { getPermissions, getFlags, getFlagBooleans } from "@/lib/permissions.ts";
 
+interface FlagBooleans {
+  //[key: string]: boolean | undefined;
+  charge_market_fee?: boolean;
+  white_list?: boolean;
+  override_authority?: boolean;
+  transfer_restricted?: boolean;
+  disable_force_settle?: boolean;
+  global_settle?: boolean;
+  disable_confidential?: boolean;
+  witness_fed_asset?: boolean;
+  committee_fed_asset?: boolean;
+  lock_max_supply?: boolean;
+  disable_new_supply?: boolean;
+  disable_mcr_update?: boolean;
+  disable_icr_update?: boolean;
+  disable_mssr_update?: boolean;
+  disable_bsrm_update?: boolean;
+  disable_collateral_bidding?: boolean;
+}
+
 interface NFTObject {
   acknowledgements: string;
   artist: string;
@@ -272,8 +292,16 @@ export default function SelectedIssuedAsset() {
       setCerQuoteAmount(options.core_exchange_rate.quote.amount);
       setCerQuoteAssetId(options.core_exchange_rate.quote.asset_id);
 
-      let permissionBooleans;
+      let permissionBooleans: FlagBooleans = {
+        charge_market_fee: true,
+        white_list: true,
+        override_authority: true,
+        transfer_restricted: true,
+        disable_confidential: true,
+      };
+
       if (options && !options.issuer_permissions) {
+        // issuer permissions 0 has disabled all permissions
         permissionBooleans = {
           charge_market_fee: false,
           white_list: false,
@@ -282,15 +310,34 @@ export default function SelectedIssuedAsset() {
           disable_confidential: false,
         };
       } else if (options && options.issuer_permissions) {
+        // Get the permissions from the integer value
         permissionBooleans = getFlagBooleans(options.issuer_permissions);
-      } else {
-        permissionBooleans = {
-          charge_market_fee: true,
-          white_list: true,
-          override_authority: true,
-          transfer_restricted: true,
-          disable_confidential: true,
-        };
+      }
+
+      setPermChargeMarketFee(permissionBooleans.charge_market_fee ?? false);
+      setPermWhiteList(permissionBooleans.white_list ?? false);
+      setPermOverrideAuthority(permissionBooleans.override_authority ?? false);
+      setPermTransferRestricted(permissionBooleans.transfer_restricted ?? false);
+      setPermDisableConfidential(permissionBooleans.disable_confidential ?? false);
+
+      if (!permissionBooleans.charge_market_fee) {
+        setDisabledChargeMarketFee(true);
+      }
+
+      if (!permissionBooleans.white_list) {
+        setDisabledWhiteList(true);
+      }
+
+      if (!permissionBooleans.override_authority) {
+        setDisabledOverrideAuthority(true);
+      }
+
+      if (!permissionBooleans.transfer_restricted) {
+        setDisabledTransferRestricted(true);
+      }
+
+      if (!permissionBooleans.disable_confidential) {
+        setDisabledDisableConfidential(true);
       }
 
       let flagBooleans;
@@ -304,32 +351,6 @@ export default function SelectedIssuedAsset() {
         };
       } else if (options && options.flags) {
         flagBooleans = getFlagBooleans(options.flags);
-      }
-
-      setPermChargeMarketFee(permissionBooleans.charge_market_fee || false);
-      setPermWhiteList(permissionBooleans.white_list || false);
-      setPermOverrideAuthority(permissionBooleans.override_authority || false);
-      setPermTransferRestricted(permissionBooleans.transfer_restricted || false);
-      setPermDisableConfidential(permissionBooleans.disable_confidential || false);
-
-      if (permissionBooleans.charge_market_fee === true) {
-        setDisabledChargeMarketFee(true);
-      }
-
-      if (permissionBooleans.white_list === true) {
-        setDisabledWhiteList(true);
-      }
-
-      if (permissionBooleans.override_authority === true) {
-        setDisabledOverrideAuthority(true);
-      }
-
-      if (permissionBooleans.transfer_restricted === true) {
-        setDisabledTransferRestricted(true);
-      }
-
-      if (permissionBooleans.disable_confidential === true) {
-        setDisabledDisableConfidential(true);
       }
 
       setFlagChargeMarketFee((flagBooleans && flagBooleans.charge_market_fee) || false);
@@ -385,6 +406,36 @@ export default function SelectedIssuedAsset() {
       </div>
     );
   };
+
+  useEffect(() => {
+    if (!permChargeMarketFee) {
+      setFlagChargeMarketFee(false);
+    }
+  }, [permChargeMarketFee]);
+
+  useEffect(() => {
+    if (!permWhiteList) {
+      setFlagWhiteList(false);
+    }
+  }, [permWhiteList]);
+
+  useEffect(() => {
+    if (!permOverrideAuthority) {
+      setFlagOverrideAuthority(false);
+    }
+  }, [permOverrideAuthority]);
+
+  useEffect(() => {
+    if (!permTransferRestricted) {
+      setFlagTransferRestricted(false);
+    }
+  }, [permTransferRestricted]);
+
+  useEffect(() => {
+    if (!permDisableConfidential) {
+      setFlagDisableConfidential(false);
+    }
+  }, [permDisableConfidential]);
 
   return (
     <div className="grid grid-cols-2 gap-5">
@@ -833,7 +884,7 @@ export default function SelectedIssuedAsset() {
         <div className="grid grid-cols-2 gap-5">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle>Permissions</CardTitle>
+              <CardTitle>Asset's permissions</CardTitle>
               <CardDescription>Note: Disabling permissions is a permanent decision</CardDescription>
             </CardHeader>
             <CardContent>
@@ -891,7 +942,7 @@ export default function SelectedIssuedAsset() {
           </Card>
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle>Permission flags</CardTitle>
+              <CardTitle>Asset's flags</CardTitle>
               <CardDescription>
                 Each allowed asset permission can be toggled on/off.
               </CardDescription>
