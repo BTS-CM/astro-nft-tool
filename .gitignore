@@ -28,4 +28,6 @@ pnpm-debug.log*
 # keys
 .env
 
-src/data/**
+# Comment these out whem you host to vercel!
+src/data/bitshares/*.json
+src/data/bitshares_testnet/*.json
