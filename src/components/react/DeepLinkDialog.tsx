@@ -43,7 +43,7 @@ export default function DeepLinkDialog({
     async function createDeepLink() {
       let response;
       try {
-        response = await fetch(`http://localhost:4321/endpoints/${usr.chain}/deeplink.json`, {
+        response = await fetch(`/endpoints/${usr.chain}/deeplink.json`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
