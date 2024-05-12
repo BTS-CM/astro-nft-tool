@@ -10,7 +10,14 @@ export default function HoverInfo({ header, content }: HoverInfoProps) {
   return (
     <HoverCard>
       <HoverCardTrigger>
-        <Label>{header}</Label>
+        <span className="flex">
+          <span className="flex-grow">
+            <Label>{header}</Label>
+          </span>
+          <span className="flex-shrink mr-2 text-gray-400">
+            <Label>ℹ️</Label>
+          </span>
+        </span>
       </HoverCardTrigger>
       <HoverCardContent className="w-80 mt-1" align="start">
         <h4 className="scroll-m-20 text-md font-semibold tracking-tight">About the {header}</h4>

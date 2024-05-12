@@ -187,6 +187,7 @@ export default function SelectedIssuedAsset() {
     parseUrlParams();
   }, []);
 
+  const [existingNFTError, setExistingNFTError] = useState<boolean>(false);
   const [response, setResponse] = useState<ApiResponse>();
   useEffect(() => {
     if (!usr || !usr.chain || !existingNFT) return;
@@ -201,6 +202,10 @@ export default function SelectedIssuedAsset() {
       if (!result.loading) {
         if (result.data) {
           const res = result.data;
+          if (res.hasOwnProperty("error")) {
+            setExistingNFTError(true);
+            return;
+          }
           setResponse(res as ApiResponse);
         }
       }
@@ -437,6 +442,16 @@ export default function SelectedIssuedAsset() {
     }
   }, [permDisableConfidential]);
 
+  function dismissDialog() {
+    setExistingNFTError(false);
+    setExistingNFT(undefined);
+    let url = new URL(window.location.toString());
+    let params = new URLSearchParams(url.search);
+    params.delete("nft");
+    url.search = params.toString();
+    window.history.replaceState({}, "", url.toString());
+  }
+
   return (
     <div className="grid grid-cols-2 gap-5">
       <div className="col-span-2">
@@ -671,10 +686,15 @@ export default function SelectedIssuedAsset() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle>Asset details</CardTitle>
-            <CardDescription></CardDescription>
+            <CardDescription>
+              These are the asset settings used for core DEX functionality.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Label>Bitshares account used for NFT issuance</Label>
+            <HoverInfo
+              content="Only this blockchain account can edit and issue the NFT. Ownership can be transferred, but it's an advanced process."
+              header="Bitshares account used for NFT issuance"
+            />
             <Input
               placeholder="Account"
               value={usr && usr.id ? usr.id : "???"}
@@ -682,42 +702,60 @@ export default function SelectedIssuedAsset() {
               readOnly
               disabled
             />
-            <Label>Asset symbol</Label>
+            <HoverInfo
+              content="The asset symbol is an unique identifier on the blockchain identifiying the asset throughout the DEX. Cheaper assets can be created by using a subasset name like NFT.TITLE"
+              header="Asset symbol"
+            />
             <Input
               placeholder="Symbol"
               value={symbol}
               type="text"
               onInput={(e) => setSymbol(e.currentTarget.value)}
             />
-            <Label>Main description</Label>
+            <HoverInfo
+              content="This is a description of the asset, not the NFT. This is displayed on explorers and optionally within reference wallets alongside DEX functionality."
+              header="Asset Description"
+            />
             <Input
               placeholder="Description"
               value={main}
               type="text"
               onInput={(e) => setMain(e.currentTarget.value)}
             />
-            <Label>Short name</Label>
+            <HoverInfo
+              content="This is the short name of the asset, less important than the symbol but still am optionally shortened unique identifier. You can just re-use the symbol for this field."
+              header="Asset short name"
+            />
             <Input
               placeholder="Short name"
               value={shortName}
               type="text"
               onInput={(e) => setShortName(e.currentTarget.value)}
             />
-            <Label>Market</Label>
+            <HoverInfo
+              content="This is the symbol of the default asset to trade the NFT against. It's usually set to BTS, but can be any other asset's symbol."
+              header="Market"
+            />
             <Input
               placeholder="Market"
               value={market}
               type="text"
               onInput={(e) => setMarket(e.currentTarget.value)}
             />
-            <Label>Maximum supply</Label>
+            <HoverInfo
+              content="This is the maximum total supply of the NFT which can be issued for trade/transfer."
+              header="Max supply"
+            />
             <Input
               placeholder="Max supply"
               value={maxSupply}
               type="number"
               onInput={(e) => setMaxSupply(parseInt(e.currentTarget.value))}
             />
-            <Label>Asset precision</Label>
+            <HoverInfo
+              content="The precision of the asset specifies the quantity of decimal places, usually this is set to 0 for a non-fungible token status."
+              header="Asset precision"
+            />
             <Input
               placeholder="Precision"
               value={precision}
@@ -731,7 +769,9 @@ export default function SelectedIssuedAsset() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle>Core Exchange Rate</CardTitle>
-            <CardDescription></CardDescription>
+            <CardDescription>
+              Optionally used to configure value of asset for fee pool usage.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Label>Base amount</Label>
@@ -1178,6 +1218,24 @@ export default function SelectedIssuedAsset() {
                 dismissCallback={() => setTRX(undefined)}
                 headerText={`Ready to ${existingNFT ? "update" : "create"} your NFT!`}
               />
+            ) : null}
+            {existingNFTError ? (
+              <Dialog
+                open={true}
+                onOpenChange={(open) => {
+                  dismissDialog();
+                }}
+              >
+                <DialogContent className="sm:max-w-[450px] bg-white">
+                  <DialogHeader>
+                    <DialogTitle>Unable to find this NFT on the {usr.chain} blockchain</DialogTitle>
+                    <DialogDescription>
+                      Go to the lookup page to locate the correct NFT.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Button onClick={() => dismissDialog()}>Dismiss</Button>
+                </DialogContent>
+              </Dialog>
             ) : null}
           </CardContent>
         </Card>

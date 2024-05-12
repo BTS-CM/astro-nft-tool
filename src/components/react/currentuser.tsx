@@ -38,8 +38,6 @@ export default function CurrentUser() {
     }
   }, [usr]);
 
-
-
   return (
     <div className="flex justify-center">
       <div className="grid grid-cols-1 mt-3">
@@ -70,12 +68,14 @@ export default function CurrentUser() {
                   </InView>
                 </div>
                 <div className="col-span-2 pl-3">
-                  <span className="text-xl">{usr.username}</span>
+                  <span className="text-xl">
+                    {usr && usr.username ? usr.username : "null-account"}
+                  </span>
                   <br />
                   <span className="text-sm">
-                    {usr.chain}
+                    {usr && usr.chain ? usr.chain : "bitshares"}
                     <br />
-                    {usr.id}
+                    {usr && usr.id ? usr.id : "1.2.3"}
                   </span>
                 </div>
               </div>
